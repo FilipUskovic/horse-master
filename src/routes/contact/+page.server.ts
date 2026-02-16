@@ -1,61 +1,53 @@
-import { PUBLIC_WEB3FORMS_ACCESS_KEY } from '$env/static/public'; 
- import { fail } from '@sveltejs/kit';
+import { PUBLIC_WEB3FORMS_ACCESS_KEY } from '$env/static/public';
+import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-    default: async ({ request, fetch }) => {
-        // 1. Preuzimanje podataka iz forme
+    default: async ({ request }) => {
         const formData = await request.formData();
         
-        // Debugging: Provjera je li ključ učitan iz .env datoteke
-        console.log("Provjera okruženja - Ključ:", PUBLIC_WEB3FORMS_ACCESS_KEY ? "PRONAĐEN" : "NIJE PRONAĐEN");
+        const name = formData.get('name')?.toString().trim() || '';
+        const email = formData.get('email')?.toString().trim() || '';
+        const message = formData.get('message')?.toString().trim() || '';
 
-        // 2. Dodavanje tajnog ključa (ostaje na backendu, sigurno od korisnika)
-        formData.append('access_key', PUBLIC_WEB3FORMS_ACCESS_KEY);
+        // validation
+        let errors: Record<string, string> = {};
+        if (name.length < 2) errors.name = "Ime mora imati barem 2 slova.";
+        if (!email.includes('@')) errors.email = "Unesite ispravan email.";
+        if (message.length < 10) errors.message = "Poruka mora imati barem 10 znakova.";
 
-        const object = Object.fromEntries(formData);
-        const json = JSON.stringify(object);
+        // objects taht we return every fails methods
+        const baseReturn = { name, email, userMessage: message, errors };
+
+        if (Object.keys(errors).length > 0) {
+            return fail(400, { success: false, statusMessage: "Ispravite greške.", ...baseReturn });
+        }
+
+        if (!PUBLIC_WEB3FORMS_ACCESS_KEY) {
+            return fail(500, { success: false, statusMessage: "Greška: API ključ nije pronađen u .env datoteci.", ...baseReturn });
+        }
 
         try {
-            // 3. Slanje zahtjeva prema Web3Forms API-ju
-            const response = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    // User-Agent simulira stvarni Chrome preglednik kako bi se izbjegao Cloudflare "Just a moment"
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                },
-                body: json
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    access_key: PUBLIC_WEB3FORMS_ACCESS_KEY,
+                    name,
+                    email,
+                    message
+                })
             });
 
-            // 4. Obrada odgovora kao teksta (sigurnije zbog Cloudflare HTML grešaka)
-            const responseText = await response.text();
-            
-            // Ispisujemo prvih 200 znakova odgovora u terminal za lakši debug
-            console.log("SIROVI ODGOVOR SERVERA:", responseText.slice(0, 200));
-
-            // 5. Pokušaj pretvaranja u JSON
-            const result = JSON.parse(responseText);
+            const result = await response.json();
 
             if (result.success) {
-                return { success: true };
+                return { success: true, statusMessage: "Poruka poslana!", ...baseReturn };
             } else {
-                // Vraćamo grešku koju je poslao sam API (npr. neispravan ključ)
-                return fail(response.status, { 
-                    success: false, 
-                    message: result.message || 'Web3Forms je odbio zahtjev.' 
-                });
+                return fail(400, { success: false, statusMessage: result.message || "Slanje nije uspjelo.", ...baseReturn });
             }
-
-        } catch (error: any) {
-            // Hvatanje grešaka poput SyntaxError (ako dobijemo HTML umjesto JSON-a)
-            console.error("KRITIČNA GREŠKA NA SERVERU:", error.message);
-            
-            return fail(500, { 
-                success: false, 
-                message: 'Došlo je do greške u komunikaciji. Cloudflare možda i dalje blokira serverski pristup.' 
-            });
+        } catch (e) {
+            return fail(500, { success: false, statusMessage: "Mrežna greška. Provjerite vezu.", ...baseReturn });
         }
     }
 };
