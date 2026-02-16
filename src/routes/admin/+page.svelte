@@ -1,166 +1,190 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { supabase } from '$lib/supabase';
+    import { fade, fly, scale, slide } from 'svelte/transition';
 
-    // State varijable
-    let file: File | null = null;
-    let title = '';
-    let uploading = false;
-    let photos: any[] = [];
+    let photos = $state<any[]>([]);
+    let uploading = $state(false);
+    let title = $state("");
+    let file = $state<File | null>(null);
+    let previewUrl = $state<string | null>(null);
+    let statusMessage = $state({ text: "", type: "" });
 
-    // 1. Dohvaćanje slika pri učitavanju stranice
     onMount(fetchPhotos);
+
+    // clear preview when compontnts die
+    onDestroy(() => {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+    });
 
     async function fetchPhotos() {
         const { data, error } = await supabase
             .from('gallery')
             .select('*')
             .order('created_at', { ascending: false });
-
         if (!error) photos = data || [];
     }
 
-    // 2. Siguran odabir datoteke (Rješava e.target grešku)
     function handleFileChange(e: Event) {
         const target = e.target as HTMLInputElement;
         if (target.files && target.files.length > 0) {
+            // Brišemo stari preview ako postoji
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            
             file = target.files[0];
+            previewUrl = URL.createObjectURL(file);
         }
     }
 
-    // 3. Proces uploada (Storage -> SQL)
     async function uploadPhoto() {
-        if (!file) return alert('Molim te, prvo odaberi sliku!');
+        if (!file) return;
         uploading = true;
+        statusMessage = { text: "Učitavanje slike...", type: "info" };
 
         try {
-            // Putanja do datoteke u 'photos' bucketu
             const fileName = `${Date.now()}-${file.name}`;
-            
-            // Upload u Storage (Pravilo: Admin Insert Storage)
             const { error: storageError } = await supabase.storage
                 .from('photos')
                 .upload(fileName, file);
-
             if (storageError) throw storageError;
 
-            // Dohvaćanje javnog linka
             const { data: { publicUrl } } = supabase.storage.from('photos').getPublicUrl(fileName);
 
-            // Upis u bazu (Pravilo: Admin Insert Gallery)
             const { error: dbError } = await supabase
                 .from('gallery')
                 .insert([{ image_url: publicUrl, title: title }]);
-
             if (dbError) throw dbError;
 
-            // Resetiranje forme i osvježavanje liste
-            alert('Slika uspješno dodana!');
-            title = '';
-            file = null;
-            (document.getElementById('image-upload') as HTMLInputElement).value = '';
+            statusMessage = { text: "Slika je uspješno objavljena!", type: "success" };
+            resetForm();
             await fetchPhotos();
         } catch (err: any) {
-            alert('Greška: ' + (err.message || 'Nepoznata greška'));
+            statusMessage = { text: "Greška: " + err.message, type: "error" };
         } finally {
             uploading = false;
         }
     }
 
-    // 4. Brisanje slike
-    async function deletePhoto(id: string, imageUrl: string) {
-        if (!confirm('Jesi li siguran da želiš obrisati ovu sliku?')) return;
+    function resetForm() {
+        title = "";
+        file = null;
+        if (previewUrl) URL.revokeObjectURL(previewUrl); // clearing 
+        previewUrl = null;
+        const input = document.getElementById('image-upload') as HTMLInputElement;
+        if (input) input.value = '';
+    }
 
+    async function handleLogout() {
+        await supabase.auth.signOut();
+        window.location.href = '/login';
+    }
+
+    async function deletePhoto(id: string, imageUrl: string) {
+        if (!confirm('Obrisati sliku trajno?')) return;
         try {
-            // Izvlačenje imena datoteke iz URL-a za Storage brisanje
             const fileName = imageUrl.split('/').pop();
             if (fileName) {
                 await supabase.storage.from('photos').remove([fileName]);
             }
-
-            // Brisanje iz SQL tablice (Pravilo: Admin Delete Gallery)
-            const { error } = await supabase.from('gallery').delete().eq('id', id);
-            if (error) throw error;
-
+            await supabase.from('gallery').delete().eq('id', id);
             photos = photos.filter(p => p.id !== id);
         } catch (err) {
-            alert('Greška pri brisanju.');
+            statusMessage = { text: "Greška pri brisanju.", type: "error" };
         }
     }
 </script>
 
-<section class="max-w-4xl mx-auto p-6 md:p-10 bg-gray-50 min-h-screen">
-    <header class="mb-10">
-        <h1 class="text-3xl font-extrabold text-gray-900">Admin Panel - Horse Master</h1>
-        <p class="text-gray-500">Upravljaj galerijom slika za transport konja.</p>
-    </header>
-
-    <div class="bg-white shadow-xl rounded-2xl p-8 mb-12 border border-gray-100">
-        <h2 class="text-xl font-semibold mb-6 text-gray-800">Dodaj novu sliku</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-                <label for="image-title" class="block text-sm font-medium text-gray-700">Naziv slike (Naslov)</label>
-                <input 
-                    id="image-title" 
-                    type="text" 
-                    bind:value={title} 
-                    class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" 
-                    placeholder="npr. Utovar u Splitu"
+<div class="min-h-screen bg-gray-100 pb-20 font-sans">
+    <nav class="bg-white border-b border-gray-200 px-6 py-4 mb-8 shadow-sm">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-black tracking-tighter text-gray-900 uppercase">
+                HORSE<span class="text-blue-600">MASTER</span> <span class="text-gray-400 font-light ml-2">ADMIN</span>
+            </h1>
+            <div class="flex items-center gap-6">
+                <a href="/" class="text-xs font-bold text-gray-400 hover:text-blue-600 transition uppercase tracking-widest">Web stranica</a>
+                <button 
+                    onclick={handleLogout}
+                    class="text-xs font-bold text-red-500 hover:text-red-700 transition uppercase tracking-widest bg-red-50 px-4 py-2 rounded-lg"
                 >
-            </div>
-            
-            <div class="space-y-2">
-                <label for="image-upload" class="block text-sm font-medium text-gray-700">Odaberi datoteku</label>
-                <input 
-                    id="image-upload" 
-                    type="file" 
-                    on:change={handleFileChange} 
-                    accept="image/*" 
-                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                >
+                    Odjava
+                </button>
             </div>
         </div>
-        
-        <button 
-            on:click={uploadPhoto} 
-            disabled={uploading || !file} 
-            class="mt-8 w-full md:w-auto px-10 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-            {uploading ? 'Učitavanje...' : 'Objavi u galeriji'}
-        </button>
-    </div>
+    </nav>
 
-    <div class="space-y-6">
-        <h2 class="text-xl font-semibold text-gray-800">Trenutne slike u galeriji</h2>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {#each photos as photo}
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src={photo.image_url} alt={photo.title} class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
-                        <button 
-                            on:click={() => deletePhoto(photo.id, photo.image_url)}
-                            class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition"
-                            title="Obriši sliku"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="p-4">
-                        <p class="font-medium text-gray-900 truncate">{photo.title || 'Bez naslova'}</p>
-                        <p class="text-xs text-gray-400 mt-1 italic uppercase tracking-wider">ID: {photo.id.slice(0,8)}</p>
-                    </div>
-                </div>
-            {/each}
-        </div>
-        
-        {#if photos.length === 0}
-            <div class="text-center py-20 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300">
-                <p class="text-gray-500 italic">Galerija je prazna. Dodaj prvu sliku!</p>
+    <main class="max-w-6xl mx-auto px-4">
+        {#if statusMessage.text}
+            <div transition:slide class="mb-6 p-4 rounded-2xl font-bold text-center text-sm shadow-sm
+                {statusMessage.type === 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 
+                statusMessage.type === 'success' ? 'bg-green-50 text-green-600 border border-green-100' : 
+                'bg-blue-50 text-blue-600 border border-blue-100'}">
+                {statusMessage.text}
             </div>
         {/if}
-    </div>
-</section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 sticky top-8">
+                    <h2 class="text-2xl font-black text-gray-900 mb-6 tracking-tight uppercase">Nova Objava</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="image-title" class="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-[0.2em]">Naslov Slike</label>
+                            <input id="image-title" type="text" bind:value={title} class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-blue-600 transition" placeholder="Opis transporta...">
+                        </div>
+                        <div>
+                            <label for="image-upload" class="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-[0.2em]">Odaberi datoteku</label>
+                            <div class="relative group">
+                                <input id="image-upload" type="file" onchange={handleFileChange} accept="image/*" class="hidden" />
+                                <label for="image-upload" class="flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-blue-400 transition overflow-hidden">
+                                    {#if previewUrl}
+                                        <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" />
+                                    {:else}
+                                        <div class="text-center p-4">
+                                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Klikni za upload</span>
+                                        </div>
+                                    {/if}
+                                </label>
+                            </div>
+                        </div>
+                        <button onclick={uploadPhoto} disabled={uploading || !file} class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition disabled:opacity-50 uppercase tracking-widest text-xs">
+                            {uploading ? 'Učitavanje...' : 'Objavi u galeriji'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-black text-gray-900 tracking-tight uppercase">Aktivna Galerija</h2>
+                    <span class="bg-gray-200 text-gray-500 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest">{photos.length} SLIKA</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {#each photos as photo (photo.id)}
+                        <div in:scale={{ duration: 400 }} class="bg-white rounded-[2rem] overflow-hidden shadow-xl border border-gray-50 group relative">
+                            <div class="h-64 overflow-hidden relative">
+                                <img src={photo.image_url} alt={photo.title} class="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                                    <button onclick={() => deletePhoto(photo.id, photo.image_url)} class="bg-white text-red-600 px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition shadow-2xl">
+                                        Obriši
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-6 bg-white">
+                                <h4 class="font-black text-gray-900 truncate uppercase text-xs tracking-wider">{photo.title || 'Bez naslova'}</h4>
+                                <p class="text-[9px] text-gray-400 mt-2 font-black uppercase tracking-widest italic">{new Date(photo.created_at).toLocaleDateString('hr-HR')}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+
+                {#if photos.length === 0 && !uploading}
+                    <div in:fade class="text-center py-32 bg-white rounded-[3rem] border-2 border-dashed border-gray-200">
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-xs">Galerija je trenutno prazna.</p>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </main>
+</div>
