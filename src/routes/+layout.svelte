@@ -16,7 +16,7 @@
     
     <Navbar />
 
-    <main class="flex-grow pt-16">
+    <main class="flex-grow pt-16 pb-24 sm:pb-0">
         {@render children()} 
     </main>
 
