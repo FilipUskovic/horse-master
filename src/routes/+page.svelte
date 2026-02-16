@@ -1,42 +1,48 @@
 <script>
+    // Svelte 5 nema poseban script potreban za ovo, samo HTML i Tailwind
 </script>
 
-<section class="relative bg-gray-900 text-white h-[80vh] flex items-center justify-center overflow-hidden">
-	
-	<div class="absolute inset-0 z-0">
-		<img 
-			src="https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=2071&auto=format&fit=crop" 
-			alt="Horse background" 
-			class="w-full h-full object-cover opacity-40"
-		/>
-		<div class="absolute inset-0 bg-black/40"></div>
-	</div>
+<section class="relative h-screen w-full overflow-hidden">
+    <div class="absolute inset-0">
+        <img 
+            src="/images/image00006.jpeg" 
+            alt="Transport konja" 
+            class="w-full h-full object-cover"
+        />
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+    </div>
 
-	<div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
-		<h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-			Horse Master
-		</h1>
-		<p class="text-xl md:text-2xl text-gray-200 mb-8 font-light">
-			Profesionalna briga, trening i transport za vaše plemenite životinje.
-			Vaš partner u svijetu konjičkog sporta.
-		</p>
-		
-		<div class="flex flex-col sm:flex-row gap-4 justify-center">
-			<a href="/contact" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-300">
-				Zatražite ponudu
-			</a>
-			<a href="/gallery" class="px-8 py-3 bg-transparent border-2 border-white hover:bg-white hover:text-black text-white font-semibold rounded-lg transition duration-300">
-				Pogledajte galeriju
-			</a>
-		</div>
-	</div>
-</section>
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
+        <span class="text-blue-400 font-bold tracking-[0.2em] uppercase mb-4 animate-fade-in-up">
+            Profesionalni Transport
+        </span>
+        
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-6 tracking-tight drop-shadow-lg">
+            HORSE <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">MASTER</span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-200 max-w-2xl mb-10 font-light leading-relaxed">
+            Siguran, pouzdan i udoban prijevoz za vaše šampione. 
+            Jer oni nisu samo konji, oni su obitelj.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a 
+                href="/contact" 
+                class="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-lg shadow-blue-900/50"
+            >
+                Zatraži ponudu
+            </a>
+            <a 
+                href="/about" 
+                class="px-8 py-4 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/30 font-bold rounded-full transition-all"
+            >
+                Saznaj više
+            </a>
+        </div>
+    </div>
 
-<section class="py-20 bg-white">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-		<h2 class="text-3xl font-bold text-gray-900 mb-4">Zašto odabrati nas?</h2>
-		<p class="text-gray-600 max-w-2xl mx-auto">
-			S godinama iskustva i strašću prema konjima, pružamo uslugu koja garantira sigurnost i kvalitetu. Bilo da se radi o transportu ili treningu, mi smo tu za vas.
-		</p>
-	</div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/50">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </div>
 </section>
