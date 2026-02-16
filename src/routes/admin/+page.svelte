@@ -180,35 +180,34 @@
 </script>
 
 <div class="min-h-screen bg-gray-100 pb-20 font-sans" in:fade> 
-   <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 mb-8 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex justify-between items-center" in:fly={{ y: -20, duration: 500 }}>
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-4 mb-8 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
         
-        <a href="/" class="group transition-opacity hover:opacity-80">
-            <h1 class="text-xl font-black tracking-tighter text-gray-900 uppercase">
-                HORSE<span class="text-blue-600">MASTER</span> 
-                <span class="text-gray-400 font-light ml-2 text-[10px] tracking-widest border-l pl-3 border-gray-200">ADMIN</span>
+        <a href="/" class="group flex items-center">
+            <h1 class="text-lg sm:text-xl font-black tracking-tighter text-gray-900 uppercase">
+                H<span class="text-blue-600">M</span><span class="hidden xs:inline">ORSEMASTER</span> 
+                <span class="text-gray-400 font-light ml-1 sm:ml-2 text-[8px] sm:text-[10px] tracking-widest border-l pl-2 sm:pl-3 border-gray-200 uppercase">Admin</span>
             </h1>
         </a>
         
-        <div class="flex items-center gap-4">
-            <a href="/" class="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors px-4 py-2 rounded-xl hover:bg-blue-50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <div class="flex items-center gap-2 sm:gap-4">
+            <a href="/" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors p-2 sm:px-4 sm:py-2 rounded-xl hover:bg-blue-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
                 </svg>
-                Pogledaj stranicu
-            </a>
+                <span class="hidden md:inline">Pogledaj stranicu</span> </a>
 
-            <button onclick={handleLogout} class="group flex items-center gap-3 bg-gray-50 hover:bg-red-50 p-1.5 pr-4 rounded-2xl transition-all duration-300 border border-gray-100 hover:border-red-100">
+            <button onclick={handleLogout} class="group flex items-center gap-2 sm:gap-3 bg-gray-50 hover:bg-red-50 p-1.5 sm:pr-4 rounded-2xl transition-all duration-300 border border-gray-100 hover:border-red-100">
                 <div class="w-8 h-8 bg-white rounded-xl shadow-sm flex items-center justify-center group-hover:text-red-500 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                     </svg>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-red-500 transition-colors">Odjava</span>
+                <span class="hidden sm:inline text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-red-500 transition-colors">Odjava</span>
             </button>
         </div>
     </div>
-</nav>
+    </nav>
 
     <main class="max-w-6xl mx-auto px-4 space-y-16">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
