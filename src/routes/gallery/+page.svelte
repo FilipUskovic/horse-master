@@ -1,14 +1,30 @@
-<script>
-	// Niz slika (kasnije može ići iz baze)
-	let images = [
-		{ src: "https://images.unsplash.com/photo-1534008753122-a837cf4652a6?q=80&w=800", title: "Jutarnji trening" },
-		{ src: "https://images.unsplash.com/photo-1551884831-bbf3ddd77535?q=80&w=800", title: "Natjecanje" },
-		{ src: "https://images.unsplash.com/photo-1612140656185-3511f44c6888?q=80&w=800", title: "Portret" },
-		{ src: "https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?q=80&w=800", title: "Štala" },
-		{ src: "https://images.unsplash.com/photo-1599058945522-28d584b6f0ff?q=80&w=800", title: "Priprema" },
-		{ src: "https://images.unsplash.com/photo-1528646673329-6126953046bc?q=80&w=800", title: "Njega" }
-	];
+<script lang="ts">
+    import { onMount } from 'svelte';
+    import { supabase } from '$lib/supabase';
+
+    let photos: any[] = [];
+
+    onMount(async () => {
+        // Dohvati sve slike (eng. "Public View Gallery")
+        const { data, error } = await supabase
+            .from('gallery')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (!error) photos = data;
+    });
 </script>
+
+<div class="container mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+    {#each photos as photo}
+        <div class="overflow-hidden rounded-lg shadow-lg">
+            <img src={photo.image_url} alt={photo.title} class="w-full h-64 object-cover">
+            <div class="p-4 bg-white">
+                <p class="font-bold">{photo.title || 'Galerija slika'}</p>
+            </div>
+        </div>
+    {/each}
+</div>
 
 <svelte:head>
 	<title>Galerija | Horse Master</title>
