@@ -5,8 +5,12 @@
     import favicon from '$lib/assets/favicon.svg';
     import { fade } from 'svelte/transition';
     import { page } from '$app/state';
+    import Toaster from '$lib/components/Toaster.svelte';
 
     let { children } = $props();
+
+    // Provjeravamo jesmo li u admin sekciji
+    const isAdmin = $derived(page.url.pathname.startsWith('/admin'));
 </script>
 
 <svelte:head>
@@ -15,9 +19,13 @@
 </svelte:head>
 
 <div class="flex flex-col min-h-screen font-sans text-gray-900 antialiased bg-gray-50">
-    <Navbar />
+    {#if !isAdmin}
+        <Navbar />
+    {/if}
 
-    <main class="flex-grow pt-16 pb-24 sm:pb-0">
+    <Toaster />
+
+    <main class="flex-grow {isAdmin ? '' : 'pt-16 pb-24 sm:pb-0'}">
         {#key page.url.pathname}
             <div in:fade={{ duration: 300, delay: 150 }}>
                 {@render children()}
@@ -25,5 +33,7 @@
         {/key}
     </main>
 
-    <Footer />
+    {#if !isAdmin}
+        <Footer />
+    {/if}
 </div>
