@@ -1,83 +1,115 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { supabase } from '$lib/supabase';
-    import { fade } from 'svelte/transition';
+    import { fade, scale, fly } from 'svelte/transition';
+    import { quintOut } from 'svelte/easing';
 
-    // 1. Ovdje ručno definiramo slike koje imaš u folderu (da galerija ne bude prazna)
-    let localImages = [
-        { src: '/images/image00001.jpeg', title: 'Transport Konja' },
-        { src: '/images/image00003.jpeg', title: 'Naš Tim' },
-        { src: '/images/image00005.jpeg', title: 'Utovar' },
-        { src: '/images/image00006.jpeg', title: 'Sigurna Prikolica' },
-        { src: '/images/image00007.jpeg', title: 'Putovanje' },
-        { src: '/images/image00008.jpeg', title: 'Zadovoljni Klijenti' }
+    interface GalleryImage {
+        image_url: string;
+        title: string;
+    }
+
+    let localImages: GalleryImage[] = [
+        { image_url: '/images/image00001.jpeg', title: 'Snimanje 1' },
+        { image_url: '/images/image00003.jpeg', title: 'Nas tim' },
+        { image_url: '/images/image00005.jpeg', title: 'konj' },
+        { image_url: '/images/image00006.jpeg', title: 'konj 2 ' },
+        { image_url: '/images/image00007.jpeg', title: 'Putovanje' },
+        { image_url: '/images/image00008.jpeg', title: 'Zadovoljni Klijenti' }
     ];
 
-    let supabasePhotos: any[] = [];
+    let supabasePhotos = $state<GalleryImage[]>([]);
+    let selectedImage = $state<string | null>(null);
+    let isLoading = $state(true);
 
-    // 2. Dohvaćamo dodatne slike iz baze (ako ih ima)
+    // jebeni tp moram sve but i galerij da bi mogoa ucitati prvo
+    let allImages = $derived([...localImages, ...supabasePhotos]);
+
     onMount(async () => {
         const { data, error } = await supabase
             .from('gallery')
-            .select('*')
+            .select('image_url, title')
             .order('created_at', { ascending: false });
 
         if (!error && data) {
-            supabasePhotos = data;
+            supabasePhotos = data as GalleryImage[];
         }
+        isLoading = false;
     });
 
-    // Spajamo lokalne i baza slike u jednu listu za prikaz
-    $: allImages = [...localImages, ...supabasePhotos];
+    const openImage = (url: string) => (selectedImage = url);
+    const closeImage = () => (selectedImage = null);
+
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key === 'Escape') closeImage();
+    }
 </script>
 
-<svelte:head>
-    <title>Galerija | Horse Master</title>
-</svelte:head>
+<svelte:window onkeydown={handleKeydown} />
 
-<section class="bg-gray-50 py-24 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4">
-        
-        <div class="text-center mb-16">
-            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-                NAŠA <span class="text-blue-600">GALERIJA</span>
+<section class="bg-white py-24 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="mb-20">
+            <h1 class="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter uppercase">
+                FOTO <span class="text-blue-600 italic">REPORTAŽA</span>
             </h1>
-            <p class="text-gray-500 max-w-2xl mx-auto">
-                Pogledajte djelić atmosfere s naših putovanja. Svaka slika priča priču o sigurnosti i povjerenju.
-            </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {#each allImages as img, i}
-                {@const imageSource = img.src || img.image_url}
-                {@const imageTitle = img.title || 'Galerija'}
-
-                <div 
-                    class="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-200 cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300"
-                    in:fade={{ delay: i * 100 }}
+                <button 
+                    type="button"
+                    onclick={() => openImage(img.image_url)}
+                    class="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-xl transition-all duration-500"
+                    aria-label="Povećaj sliku: {img.title}"
                 >
-                    
                     <img 
-                        src={imageSource} 
-                        alt={imageTitle}
-                        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        src={img.image_url} 
+                        alt={img.title}
+                        loading="lazy"
+                        class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
-                    
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-8">
-                        <span class="text-white text-lg font-bold tracking-wider border-b-2 border-blue-500 pb-1 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            {imageTitle}
-                        </span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 text-left">
+                        <h3 class="text-white text-xl font-bold">{img.title}</h3>
                     </div>
-
-                </div>
+                </button>
             {/each}
         </div>
-
-        {#if allImages.length === 0}
-            <div class="text-center py-20 text-gray-400">
-                <p>Trenutno nema fotografija u galeriji.</p>
-            </div>
-        {/if}
-
     </div>
 </section>
+
+{#if selectedImage}
+    <div 
+        class="fixed inset-0 z-[100] bg-gray-950/95 backdrop-blur-md flex items-center justify-center p-4"
+        transition:fade={{ duration: 300 }}
+        role="dialog"
+        aria-modal="true"
+    >
+        <button 
+            type="button"
+            class="absolute inset-0 w-full h-full cursor-zoom-out border-none bg-transparent"
+            onclick={closeImage}
+            aria-label="Zatvori sliku"
+        ></button>
+
+        <div class="relative max-w-5xl w-full h-full flex items-center justify-center pointer-events-none">
+            <img 
+                src={selectedImage} 
+                alt="Puna veličina" 
+                class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl pointer-events-auto"
+                in:scale={{ duration: 400, start: 0.9, easing: quintOut }}
+            />
+            
+            <button 
+                type="button"
+                onclick={closeImage}
+                class="absolute top-4 right-4 text-white/50 hover:text-white transition pointer-events-auto p-2"
+                aria-label="Zatvori"
+            >
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+{/if}
