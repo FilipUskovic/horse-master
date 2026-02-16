@@ -19,6 +19,8 @@
 
     let statusMessage = $state({ text: "", type: "" });
 
+    let editingId = $state<string | null>(null);
+
 
     onMount(() => {
         fetchPhotos();
@@ -124,12 +126,12 @@
             return;
         }
         newsLoading = true;
-        statusMessage = { text: "Objavljivanje novosti...", type: "info" };
+        statusMessage = { text: editingId ? "Spremanje promjena..." : "Objavljivanje novosti...", type: "info" };
 
         try {
-            let finalImageUrl = null;
+            let finalImageUrl = newsPreviewUrl; // Zadržavamo staru sliku ako nema nove
 
-            // Ako korisnik želi sliku uz vijest
+            // Ako je odabrana nova datoteka, uploadamo je
             if (newsFile) {
                 const fileName = `news/${Date.now()}-${newsFile.name}`;
                 await supabase.storage.from('photos').upload(fileName, newsFile);
@@ -137,22 +139,37 @@
                 finalImageUrl = data.publicUrl;
             }
 
-            const { error } = await supabase.from('updates').insert([{
+            const payload = {
                 title: newsTitle,
                 content: newsContent,
                 image_url: finalImageUrl
-            }]);
+            };
+
+            if (editingId) {
+            const { error, data } = await supabase
+                .from('updates')
+                .update(payload)
+                .eq('id', editingId)
+                .select(); 
 
             if (error) throw error;
-            statusMessage = { text: "Novost uspješno objavljena!", type: "success" };
-            resetNewsForm();
-            await fetchNews();
+            console.log("Uspješno ažurirano:", data);
+        } else {
+            const { error } = await supabase.from('updates').insert([payload]);
+            if (error) throw error;
+        }
+
+        // reset and refres
+        resetNewsForm();
+        await fetchNews();
+
         } catch (err: any) {
             statusMessage = { text: "Greška: " + err.message, type: "error" };
         } finally { newsLoading = false; }
     }
 
-    function resetNewsForm() {
+   function resetNewsForm() {
+        editingId = null; // reste id editiinga
         newsTitle = ""; newsContent = ""; newsFile = null;
         if (newsPreviewUrl) URL.revokeObjectURL(newsPreviewUrl);
         newsPreviewUrl = null;
@@ -170,20 +187,37 @@
         } catch (err) { statusMessage = { text: "Greška pri brisanju.", type: "error" }; }
     }
 
+    function editNews(post: any) {
+    editingId = post.id;
+    newsTitle = post.title;
+    newsContent = post.content;
+    newsPreviewUrl = post.image_url;
+
+    const formElement = document.querySelector('#news-form') as HTMLElement;
+
+    // does it exist before 
+    if (formElement) {
+        window.scrollTo({ 
+            top: formElement.offsetTop - 100, 
+            behavior: 'smooth' 
+        });
+    }
+}
+
     async function handleLogout() {
         await supabase.auth.signOut();
         window.location.href = '/login';
-    }
+    } 
 
-   
 </script>
+
 <div class="min-h-screen bg-gray-100 pb-20 font-sans">
     <nav class="bg-white border-b border-gray-200 px-6 py-4 mb-8 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <h1 class="text-xl font-black tracking-tighter text-gray-900 uppercase">
-                HORSE<span class="text-blue-600">MASTER</span> <span class="text-gray-400 font-light ml-2">ADMIN</span>
+                HORSE<span class="text-blue-600">MASTER</span> <span class="text-gray-400 font-light ml-2 text-xs">ADMIN PANEL</span>
             </h1>
-            <button onclick={handleLogout} class="text-xs font-bold text-red-500 bg-red-50 px-4 py-2 rounded-lg">Odjava</button>
+            <button onclick={handleLogout} class="text-xs font-bold text-red-500 bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition">Odjava</button>
         </div>
     </nav>
 
@@ -203,42 +237,56 @@
                     <div class="space-y-4">
                         <input type="text" bind:value={title} class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-blue-600 transition" placeholder="Naslov slike...">
                         <input id="image-upload" type="file" onchange={handleFileChange} accept="image/*" class="hidden" />
-                        <label for="image-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer bg-gray-50 overflow-hidden">
+                        <label for="image-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer bg-gray-50 overflow-hidden hover:bg-gray-100 transition">
                             {#if previewUrl} <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" /> 
-                            {:else} <span class="text-[10px] font-black text-gray-400 uppercase">Dodaj Sliku</span> {/if}
+                            {:else} <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">Klikni za odabir slike</span> {/if}
                         </label>
-                        <button onclick={uploadPhoto} disabled={uploading || !file} class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs">Objavi Sliku</button>
+                        <button onclick={uploadPhoto} disabled={uploading || !file} class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs shadow-lg shadow-blue-500/20 active:scale-95 transition disabled:opacity-50">Objavi Sliku</button>
                     </div>
                 </div>
             </div>
             <div class="lg:col-span-2">
-                <h2 class="text-xl font-black mb-6 uppercase tracking-tight">Aktivna Galerija ({photos.length})</h2>
+                <h2 class="text-xl font-black mb-6 uppercase tracking-tight flex items-center gap-3">Aktivna Galerija <span class="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-[10px]">{photos.length}</span></h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {#each photos as p (p.id)}
-                        <div class="relative group aspect-square rounded-2xl overflow-hidden shadow-lg">
+                        <div class="relative group aspect-square rounded-2xl overflow-hidden shadow-lg" in:scale>
                             <img src={p.image_url} alt="" class="w-full h-full object-cover" />
-                            <button onclick={() => deletePhoto(p.id, p.image_url)} class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition">X</button>
+                            <button onclick={() => deletePhoto(p.id, p.image_url)} class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition shadow-xl">✕</button>
                         </div>
                     {/each}
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 border-t pt-16 border-gray-200">
+        <div id="news-form" class="grid grid-cols-1 lg:grid-cols-3 gap-10 border-t pt-16 border-gray-200">
             <div class="lg:col-span-1">
                 <div class="bg-gray-900 rounded-3xl p-8 shadow-xl text-white sticky top-8">
-                    <h2 class="text-2xl font-black mb-6 uppercase tracking-tight">Nova Obavijest</h2>
+                    <h2 class="text-2xl font-black mb-6 uppercase tracking-tight">
+                        {editingId ? 'Uredi Obavijest' : 'Nova Obavijest'}
+                    </h2>
                     <div class="space-y-4">
                         <input type="text" bind:value={newsTitle} class="w-full bg-white/10 border-2 border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-white" placeholder="Naslov vijesti...">
-                        <textarea bind:value={newsContent} rows="4" class="w-full bg-white/10 border-2 border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-white resize-none" placeholder="Sadržaj obavijesti..."></textarea>
+                        <textarea bind:value={newsContent} rows="6" class="w-full bg-white/10 border-2 border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-white resize-none" placeholder="Sadržaj obavijesti..."></textarea>
                         
                         <input id="news-upload" type="file" onchange={handleNewsFileChange} accept="image/*" class="hidden" />
                         <label for="news-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer bg-white/5 hover:bg-white/10 overflow-hidden transition">
                             {#if newsPreviewUrl} <img src={newsPreviewUrl} alt="Preview" class="w-full h-full object-cover" /> 
-                            {:else} <span class="text-[10px] font-black text-white/40 uppercase">Slika (Opcionalno)</span> {/if}
+                            {:else} <span class="text-[10px] font-black text-white/40 uppercase tracking-widest text-center px-4">Slika (Opcionalno)</span> {/if}
                         </label>
                         
-                        <button onclick={uploadNews} disabled={newsLoading} class="w-full bg-white text-gray-900 font-black py-4 rounded-2xl uppercase text-xs hover:bg-blue-500 hover:text-white transition">Objavi Novost</button>
+                        <div class="flex gap-2">
+                            <button 
+                                onclick={uploadNews} 
+                                disabled={newsLoading} 
+                                class="flex-grow bg-white text-gray-900 font-black py-4 rounded-2xl uppercase text-xs hover:bg-blue-500 hover:text-white transition active:scale-95"
+                            >
+                                {newsLoading ? 'Spremanje...' : editingId ? 'Spremi Promjene' : 'Objavi Novost'}
+                            </button>
+
+                            {#if editingId}
+                                <button onclick={resetNewsForm} class="bg-red-600 text-white px-5 rounded-2xl hover:bg-red-700 transition" title="Odustani">✕</button>
+                            {/if}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -247,21 +295,29 @@
                 <h2 class="text-xl font-black mb-6 uppercase tracking-tight">Popis Novosti ({newsPosts.length})</h2>
                 <div class="space-y-4">
                     {#each newsPosts as post (post.id)}
-                        <div class="bg-white p-6 rounded-[2rem] shadow-md border border-gray-100 flex gap-6 items-start">
+                        <div class="bg-white p-6 rounded-[2rem] shadow-md border border-gray-100 flex gap-6 items-start hover:border-blue-200 transition-colors" in:slide>
                             {#if post.image_url}
                                 <img src={post.image_url} alt="" class="w-24 h-24 rounded-2xl object-cover flex-shrink-0" />
                             {/if}
                             <div class="flex-grow">
                                 <h3 class="font-black text-lg uppercase leading-tight">{post.title}</h3>
                                 <p class="text-gray-500 text-sm mt-2 line-clamp-2">{post.content}</p>
-                                <div class="flex justify-between items-center mt-4">
-                                    <span class="text-[10px] font-bold text-gray-300 uppercase">{new Date(post.created_at).toLocaleDateString('hr-HR')}</span>
-                                    <button onclick={() => deleteNews(post.id, post.image_url)} class="text-red-500 font-bold text-xs uppercase hover:underline">Obriši</button>
+                                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-50">
+                                    <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">{new Date(post.created_at).toLocaleDateString('hr-HR')}</span>
+                                    <div class="flex gap-4">
+                                        <button onclick={() => editNews(post)} class="text-blue-500 font-black text-[10px] uppercase hover:underline tracking-widest">Uredi</button>
+                                        <button onclick={() => deleteNews(post.id, post.image_url)} class="text-red-500 font-bold text-[10px] uppercase hover:underline tracking-widest">Obriši</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     {/each}
                 </div>
+                {#if newsPosts.length === 0 && !newsLoading}
+                    <div class="text-center py-20 bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
+                        <p class="text-gray-300 font-bold uppercase tracking-[0.2em] text-[10px]">Nema objavljenih vijesti.</p>
+                    </div>
+                {/if}
             </div>
         </div>
     </main>

@@ -1,29 +1,37 @@
 <script lang="ts">
-    import { fade, fly, slide } from 'svelte/transition';
+    import { fade, fly, scale } from 'svelte/transition';
     import { onMount } from 'svelte';
+    import { quintOut } from 'svelte/easing';
 
-    // Primamo podatke iz +page.ts (uključujući news)
     let { data } = $props();
+    
+    // animaition 
     let loaded = $state(false);
+    let selectedNews = $state<any | null>(null);
+
+    //  modal controls
+    const openNews = (post: any) => (selectedNews = post);
+    const closeNews = () => (selectedNews = null);
 
     onMount(() => {
         loaded = true;
     });
 
+
     const services = [
         { 
             title: 'Nacionalni transport', 
-            desc: 'Pouzdan i siguran prijevoz konja unutar granica RH.',
+            desc: 'Pouzdan i siguran prijevoz konja unutar granica RH s licenciranim vozačima.',
             icon: '🇭🇷' 
         },
         { 
             title: 'Međunarodne rute', 
-            desc: 'Kompletna logistika i papirologija za siguran prijelaz granica EU.',
+            desc: 'Kompletna logistika i papirologija za siguran prijelaz granica cijele EU.',
             icon: '🇪🇺' 
         },
         { 
             title: 'Specijalna njega', 
-            desc: 'Individualni pristup svakom konju tijekom cijelog puta.',
+            desc: 'Individualni pristup svakom konju, uključujući redovite pauze i hranjenje.',
             icon: '🐴' 
         }
     ];
@@ -59,10 +67,10 @@
             </p>
             
             <div in:fade={{ duration: 1000, delay: 800 }} class="flex flex-col sm:flex-row gap-6">
-                <a href="/contact" class="px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-2xl shadow-blue-500/40 uppercase tracking-widest text-sm">
+                <a href="/contact" class="px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-2xl shadow-blue-500/40 uppercase tracking-widest text-sm transform hover:scale-105 transition-all">
                     Zatraži ponudu
                 </a>
-                <a href="/gallery" class="px-10 py-5 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md border border-white/20 font-black rounded-2xl uppercase tracking-widest text-sm">
+                <a href="/gallery" class="px-10 py-5 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md border border-white/20 font-black rounded-2xl uppercase tracking-widest text-sm transition-all">
                     Galerija
                 </a>
             </div>
@@ -84,7 +92,7 @@
         </div>
         <div class="space-y-2">
             <h3 class="text-5xl font-black italic">10k+</h3>
-            <p class="text-blue-100 uppercase tracking-widest text-[10px] font-bold">Prijeđenih kilometara</p>
+            <p class="text-blue-100 uppercase tracking-widest text-[10px] font-bold">KM godišnje</p>
         </div>
         <div class="space-y-2">
             <h3 class="text-5xl font-black italic">100%</h3>
@@ -105,7 +113,7 @@
             {#each services as service}
                 <div class="p-10 rounded-[2.5rem] bg-gray-50 border border-gray-100 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 group">
                     <span class="text-5xl block mb-6 group-hover:scale-110 transition-transform duration-300">{service.icon}</span>
-                    <h3 class="text-xl font-black text-gray-900 mb-4 uppercase">{service.title}</h3>
+                    <h3 class="text-xl font-black text-gray-900 mb-4 uppercase tracking-tight">{service.title}</h3>
                     <p class="text-gray-500 leading-relaxed font-medium">{service.desc}</p>
                 </div>
             {/each}
@@ -118,7 +126,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
                 <div>
-                    <span class="text-blue-500 font-black uppercase tracking-[0.3em] text-xs">Zadnje objave</span>
+                    <span class="text-blue-500 font-black uppercase tracking-[0.3em] text-xs">Aktualno</span>
                     <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase mt-2">
                         NOVOSTI <span class="text-gray-600 font-light italic">&</span> INFO
                     </h2>
@@ -147,17 +155,22 @@
                             <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-4">
                                 {new Date(post.created_at).toLocaleDateString('hr-HR')}
                             </span>
-                            <h3 class="text-2xl font-black text-white mb-4 leading-tight uppercase">
+                            <h3 class="text-2xl font-black text-white mb-4 leading-tight uppercase tracking-tight">
                                 {post.title}
                             </h3>
                             <p class="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">
                                 {post.content}
                             </p>
                             <div class="mt-auto">
-                                <a href="/contact" class="inline-flex items-center text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] group-hover:text-white transition-colors">
-                                    Saznaj više 
-                                    <svg class="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                </a>
+                                <button 
+                                    onclick={() => openNews(post)}
+                                    class="inline-flex items-center text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] group-hover:text-white transition-colors border-none bg-transparent cursor-pointer"
+                                >
+                                    PROČITAJ VIŠE 
+                                    <svg class="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -166,3 +179,70 @@
         </div>
     </section>
 {/if}
+
+{#if selectedNews}
+    <div 
+        class="fixed inset-0 z-[110] bg-gray-950/95 backdrop-blur-xl flex items-center justify-center p-4"
+        transition:fade={{ duration: 300 }}
+        role="dialog"
+        aria-modal="true"
+    >
+        <button 
+            type="button" 
+            class="absolute inset-0 w-full h-full cursor-zoom-out border-none bg-transparent" 
+            onclick={closeNews} 
+            aria-label="Zatvori"
+        ></button>
+
+        <div 
+            class="relative bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[3rem] shadow-2xl pointer-events-auto"
+            in:scale={{ duration: 400, start: 0.9, easing: quintOut }}
+        >
+            {#if selectedNews.image_url}
+                <div class="w-full h-80 overflow-hidden">
+                    <img src={selectedNews.image_url} alt="" class="w-full h-full object-cover" />
+                </div>
+            {/if}
+
+            <div class="p-10 md:p-16 text-left">
+                <span class="text-blue-600 font-black text-[10px] uppercase tracking-[0.3em]">
+                    OBJAVA: {new Date(selectedNews.created_at).toLocaleDateString('hr-HR')}
+                </span>
+                
+                <h2 class="text-3xl md:text-5xl font-black text-gray-900 mt-4 mb-8 leading-tight uppercase tracking-tighter">
+                    {selectedNews.title}
+                </h2>
+
+                <div class="h-1.5 w-20 bg-blue-600 mb-8 rounded-full"></div>
+
+                <p class="text-gray-600 text-lg leading-relaxed whitespace-pre-wrap font-medium">
+                    {selectedNews.content}
+                </p>
+
+                <button 
+                    onclick={closeNews}
+                    class="mt-12 px-10 py-4 bg-gray-900 text-white font-black rounded-2xl hover:bg-blue-600 transition-all uppercase tracking-widest text-xs"
+                >
+                    ZATVORI OBAVIJEST
+                </button>
+            </div>
+
+            <button 
+                onclick={closeNews}
+                class="absolute top-6 right-6 p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition text-gray-900"
+                aria-label="Zatvori"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+{/if}
+
+<style>
+    /*Sprijecavamo skrolanje dok je vijest otvorena */
+    :global(body:has([role="dialog"])) {
+        overflow: hidden;
+    }
+</style>
