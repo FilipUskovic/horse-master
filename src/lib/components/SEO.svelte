@@ -1,18 +1,18 @@
 <script lang="ts">
     /* src/lib/components/SEO.svelte */
     
-    let { 
+   let { 
         title = "Horse Master", 
         description = "Vrhunska škola jahanja i briga o konjima. Pridružite nam se u avanturi.", 
         image = "/images/image00001.jpeg", 
         type = "website" 
     } = $props();
 
-    const siteUrl = "https://horse-master.vercel.app"; 
-    const fullImageUrl = `${siteUrl}${image}`;
+    const siteUrl = "https://horse-master.vercel.app";
+    let fullImageUrl = $derived(`${siteUrl}${image}`);
 
     //  JSON-LD:
-    const businessSchema = {
+    let businessSchema = $derived({
         "@context": "https://schema.org",
         "@type": "SportsActivityLocation", // 
         "name": "Horse Master",
@@ -24,14 +24,14 @@
         "priceRange": "$$",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Samobor nes...", 
-            "addressLocality": "Samobor",        
+            "streetAddress": "Neka ADRESA", // 
+            "addressLocality": "Samobor",
             "postalCode": "10000",
             "addressCountry": "HR"
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": 45.8150,  
+            "latitude": 45.8150, 
             "longitude": 15.9819 
         },
         "openingHoursSpecification": [
@@ -50,11 +50,11 @@
         ],
         "sameAs": [
             "https://instagram.com/tvoj_instagram", 
-            "https://facebook.com/tvoj_facebook"    
+            "https://facebook.com/tvoj_facebook"
         ]
-    };
+    });
 
-    const jsonLdString = `<script type="application/ld+json">${JSON.stringify(businessSchema)}<\/script>`;
+let jsonLdString = $derived(`<script type="application/ld+json">${JSON.stringify(businessSchema)}<\/script>`);
 </script>
 
 <svelte:head>
