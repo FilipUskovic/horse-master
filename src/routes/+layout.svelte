@@ -6,6 +6,7 @@
     import { page } from '$app/state';
     import Toaster from '$lib/components/Toaster.svelte';
     import { onNavigate } from '$app/navigation';
+    import CookieConsent from '$lib/components/CookieConsent.svelte';
 
     let { children } = $props();
 
@@ -37,6 +38,7 @@
     {/if}
 
     <Toaster />
+    <CookieConsent />
 
     <main class="flex-grow {isAdmin ? '' : 'pt-16 pb-24 sm:pb-0'}">
         {@render children()}
