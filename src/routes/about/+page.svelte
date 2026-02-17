@@ -40,6 +40,7 @@
     <img
       src="/images/image00001.jpeg"
       alt="Horse Master Transport"
+      loading="lazy" decoding="async"
       class="w-full h-full object-cover opacity-40 grayscale"
     />
     <div

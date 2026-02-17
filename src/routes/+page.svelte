@@ -49,7 +49,8 @@
     <div class="absolute inset-0">
         <img 
             src="/images/image00006.jpeg" 
-            alt="Transport konja u pokretu" 
+            alt="Transport konja u pokretu"
+            loading="lazy" decoding="async" 
             class="w-full h-full object-cover transition-transform duration-[10000ms] {loaded ? 'scale-110' : 'scale-100'}"
         />
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-gray-950"></div>
@@ -145,7 +146,7 @@
                     >
                         {#if post.image_url}
                             <div class="h-64 overflow-hidden">
-                                <img src={post.image_url} alt={post.title} class="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
+                                <img src={post.image_url} alt={post.title} loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" />
                             </div>
                         {:else}
                             <div class="h-64 bg-blue-600/20 flex flex-col items-center justify-center p-8 text-center relative">
@@ -203,7 +204,7 @@
         >
             {#if selectedNews.image_url}
                 <div class="w-full h-80 overflow-hidden">
-                    <img src={selectedNews.image_url} alt="" class="w-full h-full object-cover" />
+                    <img src={selectedNews.image_url} alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" />
                 </div>
             {/if}
 

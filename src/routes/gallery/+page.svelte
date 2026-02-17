@@ -110,6 +110,7 @@
             <img 
                 src={selectedImage} 
                 alt="Puna veličina" 
+                loading="lazy" decoding="async"
                 class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl pointer-events-auto"
                 in:scale={{ duration: 400, start: 0.9, easing: quintOut }}
             />

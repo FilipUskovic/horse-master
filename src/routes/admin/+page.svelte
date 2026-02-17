@@ -230,7 +230,7 @@
                         <input type="text" bind:value={title} class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-blue-600 transition" placeholder="Naslov slike...">
                         <input id="image-upload" type="file" onchange={handleFileChange} accept="image/*" class="hidden" />
                         <label for="image-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer bg-gray-50 overflow-hidden hover:bg-gray-100 transition">
-                            {#if previewUrl} <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" in:fade /> 
+                            {#if previewUrl} <img src={previewUrl} alt="Preview" loading="lazy" decoding="async" class="w-full h-full object-cover" in:fade /> 
                             {:else} <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">Odaberi datoteku</span> {/if}
                         </label>
                         {#if uploading}
@@ -247,7 +247,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {#each photos as p (p.id)}
                         <div class="relative group aspect-square rounded-2xl overflow-hidden shadow-lg" in:scale>
-                            <img src={p.image_url} alt="" class="w-full h-full object-cover" />
+                            <img src={p.image_url} alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" />
                             <button onclick={() => openConfirm("Obriši sliku?", "Trajno uklanjanje iz baze.", () => deletePhoto(p.id, p.image_url))} class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition shadow-xl font-bold">✕</button>
                         </div>
                     {/each}
@@ -267,7 +267,7 @@
                         
                         <input id="news-upload" type="file" onchange={handleNewsFileChange} accept="image/*" class="hidden" />
                         <label for="news-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer bg-white/5 hover:bg-white/10 overflow-hidden transition">
-                            {#if newsPreviewUrl} <img src={newsPreviewUrl} alt="Preview" class="w-full h-full object-cover" in:fade /> 
+                            {#if newsPreviewUrl} <img src={newsPreviewUrl} alt="Preview" loading="lazy" decoding="async" class="w-full h-full object-cover" in:fade /> 
                             {:else} <span class="text-[10px] font-black text-white/40 uppercase tracking-widest text-center px-4">Slika (Opcionalno)</span> {/if}
                         </label>
                         
@@ -289,7 +289,7 @@
                     {#each newsPosts as post (post.id)}
                         <div class="bg-white p-6 rounded-[2rem] shadow-md border border-gray-100 flex gap-6 items-start hover:border-blue-200 transition-colors" in:fly={{ x: 20 }}>
                             {#if post.image_url}
-                                <img src={post.image_url} alt="" class="w-24 h-24 rounded-2xl object-cover flex-shrink-0" />
+                                <img src={post.image_url} alt="" loading="lazy" decoding="async" class="w-24 h-24 rounded-2xl object-cover flex-shrink-0" />
                             {/if}
                             <div class="flex-grow">
                                 <h3 class="font-black text-lg uppercase leading-tight">{post.title}</h3>
