@@ -17,7 +17,7 @@
             editorProps: {
                 // Tailwind klase za sam tekst unutra
                 attributes: {
-                    class: 'prose prose-sm sm:prose-base max-w-none focus:outline-none min-h-[150px] text-white'
+                   class: 'prose prose-invert prose-sm sm:prose-base max-w-none focus:outline-none min-h-[150px] text-white'
                 }
             },
             onUpdate: ({ editor }) => {
@@ -70,7 +70,6 @@
 </div>
 
 <style>
-    /* Ovdje stiliziramo placeholder ako želiš */
     :global(.ProseMirror p.is-editor-empty:first-child::before) {
         content: attr(data-placeholder);
         float: left;

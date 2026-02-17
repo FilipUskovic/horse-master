@@ -18,7 +18,6 @@
         loaded = true;
     });
 
-
     const services = [
         { 
             title: 'Nacionalni transport', 
@@ -38,7 +37,6 @@
     ];
 </script>
 
-<!-- SEO optimizatin to looks profesional when share link -->
 <SEO 
     title={data.seo?.title || "Početna - Vrhunski Transport Konja"} 
     description={data.seo?.description || "Horse Master nudi siguran transport, njegu i školu jahanja. Vaši konji su naša obitelj."}
@@ -162,9 +160,11 @@
                             <h3 class="text-2xl font-black text-white mb-4 leading-tight uppercase tracking-tight">
                                 {post.title}
                             </h3>
-                            <p class="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">
-                                {post.content}
-                            </p>
+                            
+                            <div class="prose prose-invert prose-sm text-gray-400 mb-8 line-clamp-3 max-w-none">
+                                {@html post.content}
+                            </div>
+                            
                             <div class="mt-auto">
                                 <button 
                                     onclick={() => openNews(post)}
@@ -219,9 +219,9 @@
 
                 <div class="h-1.5 w-20 bg-blue-600 mb-8 rounded-full"></div>
 
-                <p class="text-gray-600 text-lg leading-relaxed whitespace-pre-wrap font-medium">
-                    {selectedNews.content}
-                </p>
+                <div class="prose prose-lg prose-blue text-gray-600 max-w-none">
+                    {@html selectedNews.content}
+                </div>
 
                 <button 
                     onclick={closeNews}
