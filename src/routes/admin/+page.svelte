@@ -4,7 +4,7 @@
     import { fade, fly, scale, slide } from 'svelte/transition';
     import { toast } from '$lib/toast.svelte'; 
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
-    import { compressImage } from '$lib/imageUtils';
+    import { compressImage } from '$lib/ImageUtils'
 
     // --- global states ---
     let uploadProgress = $state(0);
