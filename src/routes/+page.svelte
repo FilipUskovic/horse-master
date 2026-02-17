@@ -47,6 +47,7 @@
     <div class="absolute inset-0">
         <img 
             src="/images/image00006.jpeg" 
+            width="1920" height="1280"
             alt="Transport konja u pokretu"
             loading="lazy" decoding="async" 
             class="w-full h-full object-cover transition-transform duration-[10000ms] {loaded ? 'scale-110' : 'scale-100'}"

@@ -39,6 +39,7 @@
   <div class="absolute inset-0 z-0">
     <img
       src="/images/image00001.jpeg"
+      width="1920" height="1280"
       alt="Horse Master Transport"
       loading="lazy" decoding="async"
       class="w-full h-full object-cover opacity-40 grayscale"
@@ -80,6 +81,7 @@
         >
           <img
             src="/images/image00008.jpeg"
+            width="1920" height="1280"
             alt="Horse Master Ekipa"
             class="w-full h-[550px] object-cover hover:scale-105 transition-transform duration-700"
             loading="eager"
