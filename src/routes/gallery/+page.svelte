@@ -57,7 +57,7 @@
 
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {#each allImages as img, i}
+            {#each allImages as img (img.image_url)}
                 <button 
                     type="button"
                     onclick={() => openImage(img.image_url)}
@@ -68,6 +68,7 @@
                         src={img.image_url} 
                         alt={img.title}
                         loading="lazy"
+                        decoding="async"
                         class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 text-left">
