@@ -24,6 +24,9 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@supabase/supabase-js": "^2.95.3"
+		"@supabase/supabase-js": "^2.95.3",
+		"@tiptap/core": "^3.19.0",
+		"@tiptap/extension-link": "^3.19.0",
+		"@tiptap/starter-kit": "^3.19.0"
 	}
 }
