@@ -62,25 +62,32 @@
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {#each allImages as img (img.image_url)}
-                <button 
-                    type="button"
-                    onclick={() => openImage(img.image_url)}
-                    class="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-xl transition-all duration-500 cursor-zoom-in"
-                    aria-label="Povećaj sliku: {img.title}"
-                >
-                    <img 
-                        src={img.image_url} 
-                        alt={img.title}
-                        loading="lazy"
-                        decoding="async"
-                        class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                    <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 text-left">
-                        <h3 class="text-white text-xl font-bold">{img.title}</h3>
-                    </div>
-                </button>
-            {/each}
+            {#if isLoading}
+                {#each Array(6) as _}
+                    <div class="aspect-[4/5] bg-gray-100 rounded-[2.5rem] animate-pulse-custom"></div>
+                {/each}
+            {:else}
+                {#each allImages as img (img.image_url)}
+                    <button 
+                        type="button"
+                        onclick={() => openImage(img.image_url)}
+                        class="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-xl transition-all duration-500 cursor-zoom-in"
+                        aria-label="Povećaj sliku: {img.title}"
+                        in:fade={{ duration: 400 }}
+                    >
+                        <img 
+                            src={img.image_url} 
+                            alt={img.title}
+                            loading="lazy"
+                            decoding="async"
+                            class="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 text-left">
+                            <h3 class="text-white text-xl font-bold">{img.title}</h3>
+                        </div>
+                    </button>
+                {/each}
+            {/if}
         </div>
     </div>
 </section>
@@ -120,4 +127,16 @@
         </div>
     </div>
 {/if}
+
+
+<style>
+    /* ✅animation */
+    @keyframes pulseCustom {
+        0%, 100% { opacity: 1; background-color: #f3f4f6; }
+        50% { opacity: 0.5; background-color: #e5e7eb; }
+    }
+    .animate-pulse-custom {
+        animation: pulseCustom 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>
 

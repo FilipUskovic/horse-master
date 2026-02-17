@@ -4,6 +4,7 @@
     import { fade, fly, scale, slide } from 'svelte/transition';
     import { toast } from '$lib/toast.svelte'; 
     import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+    import { compressImage } from '$lib/imageUtils';
 
     // --- global states ---
     let uploadProgress = $state(0);
@@ -68,10 +69,21 @@
         toast.add("Slanje slike...", "info");
 
         try {
+
+            // compress
+            const compressedBlob = await compressImage(file);
+
             const interval = setInterval(() => { if (uploadProgress < 90) uploadProgress += 5; }, 300);
-            const fileName = `${Date.now()}-${file.name}`;
-            const { error: storageError } = await supabase.storage.from('photos').upload(fileName, file);
-            if (storageError) throw storageError;
+
+            const fileName = `${Date.now()}-${file.name.replace(/\.[^/.]+$/, "")}.jpg`;   
+                    
+            const { error: storageError } = await supabase.storage
+            .from('photos')
+            .upload(fileName, compressedBlob, {
+                contentType: 'image/jpeg'
+            });
+
+        if (storageError) throw storageError;
 
             clearInterval(interval);
             uploadProgress = 100;
