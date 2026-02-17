@@ -3,14 +3,27 @@
     import Navbar from '$lib/components/Navbar.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import favicon from '$lib/assets/favicon.svg';
-    import { fade } from 'svelte/transition';
     import { page } from '$app/state';
     import Toaster from '$lib/components/Toaster.svelte';
+    import { onNavigate } from '$app/navigation';
 
     let { children } = $props();
 
-    // Provjeravamo jesmo li u admin sekciji
+    // check if is in admin section
     const isAdmin = $derived(page.url.pathname.startsWith('/admin'));
+
+    onNavigate((navigation) => {
+        // if view transation is not posiible - contune normally
+        if (!document.startViewTransition) return;
+
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                // wait to laod site 
+                await navigation.complete;
+            });
+        });
+    });
 </script>
 
 <svelte:head>
@@ -26,11 +39,7 @@
     <Toaster />
 
     <main class="flex-grow {isAdmin ? '' : 'pt-16 pb-24 sm:pb-0'}">
-        {#key page.url.pathname}
-            <div in:fade={{ duration: 300, delay: 150 }}>
-                {@render children()}
-            </div>
-        {/key}
+        {@render children()}
     </main>
 
     {#if !isAdmin}
