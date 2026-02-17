@@ -3,7 +3,7 @@
     import { supabase } from '$lib/supabase';
     import { fade, scale, fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
-
+    import SEO from '$lib/components/SEO.svelte'
     interface GalleryImage {
         image_url: string;
         title: string;
@@ -47,6 +47,12 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
+<SEO 
+    title="Galerija - Foto Reportaža" 
+    description="Pogledajte našu arhivu sretnih putnika. Trenuci s naših putovanja, transporta i druženja s konjima zabilježeni objektivom."
+    image="/images/image00001.jpeg" 
+/>
+
 <section class="bg-white py-24 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 text-center">
         <div class="mb-20">
@@ -55,13 +61,12 @@
             </h1>
         </div>
 
-        
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {#each allImages as img (img.image_url)}
                 <button 
                     type="button"
                     onclick={() => openImage(img.image_url)}
-                    class="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-xl transition-all duration-500"
+                    class="group relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-gray-100 shadow-xl transition-all duration-500 cursor-zoom-in"
                     aria-label="Povećaj sliku: {img.title}"
                 >
                     <img 

@@ -2,6 +2,7 @@
     import { fade, fly, scale } from 'svelte/transition';
     import { onMount } from 'svelte';
     import { quintOut } from 'svelte/easing';
+    import SEO from '$lib/components/SEO.svelte'
 
     let { data } = $props();
     
@@ -37,10 +38,12 @@
     ];
 </script>
 
-<svelte:head>
-    <title>{data.seo.title}</title>
-    <meta name="description" content={data.seo.description} />
-</svelte:head>
+<!-- SEO optimizatin to looks profesional when share link -->
+<SEO 
+    title={data.seo?.title || "Početna - Vrhunski Transport Konja"} 
+    description={data.seo?.description || "Horse Master nudi siguran transport, njegu i školu jahanja. Vaši konji su naša obitelj."}
+    image="/images/image00006.jpeg"
+/>
 
 <section class="relative h-screen w-full overflow-hidden bg-gray-950">
     <div class="absolute inset-0">
