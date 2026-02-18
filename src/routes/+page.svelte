@@ -46,7 +46,7 @@
 <section class="relative h-screen w-full overflow-hidden bg-gray-950">
     <div class="absolute inset-0">
         <img 
-            src="/images/image00006.jpeg" 
+            src="/images/Prva.PNG" 
             width="1920" height="1280"
             alt="Transport konja u pokretu"
             loading="lazy" decoding="async" 

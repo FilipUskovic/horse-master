@@ -89,7 +89,7 @@
     <section class="relative h-[85vh] md:h-screen w-full flex flex-col justify-center items-center overflow-hidden">
         <div class="absolute inset-0 w-full h-full scale-110 will-change-transform" style="transform: translateY({scrollY * (innerWidth > 768 ? 0.4 : 0.15)}px)">
             <img 
-                src="images/image00001.jpeg" 
+                src="/images/image00001.jpeg" 
                 alt="Hero Horse" 
                 class="w-full h-full object-cover opacity-50 grayscale contrast-125"
             />
@@ -142,7 +142,7 @@
                 
                 <div class="absolute inset-0 overflow-hidden">
                     <img 
-                        src="images/image00007.jpeg" 
+                        src="/images/image00007.jpeg" 
                         alt="Filmska produkcija" 
                         class="w-full h-full object-cover opacity-70 transition-transform duration-[1.5s] ease-out scale-100 group-hover:scale-105"
                     />
