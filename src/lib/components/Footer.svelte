@@ -47,12 +47,21 @@
             <div>
                 <h3 class="text-brandLight font-black uppercase tracking-[0.4em] mb-8 text-[10px] italic">Kontakt</h3>
                 <ul class="space-y-5 text-[10px] font-black uppercase tracking-[0.2em]">
+                     <li class="flex items-start group">
+                        <div class="bg-white/5 p-2 rounded-xl group-hover:bg-brandBlue/10 transition-colors mr-4 border border-white/5">
+                            <!-- dodat ikoni posao -->
+                            <svg class="w-4 h-4 text-brandBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <span class="mt-2 text-brandLight/40 group-hover:text-brandLight transition-colors">
+                            A&P CONSULTING
+                        </span>
+                    </li>
                     <li class="flex items-start group">
                         <div class="bg-white/5 p-2 rounded-xl group-hover:bg-brandBlue/10 transition-colors mr-4 border border-white/5">
                             <svg class="w-4 h-4 text-brandBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
                         <span class="mt-2 text-brandLight/40 group-hover:text-brandLight transition-colors">
-                            Zagreb, Hrvatska
+                            Samobor, Hrvatska
                         </span>
                     </li>
                     <li class="flex items-center group">

@@ -24,15 +24,10 @@
         "priceRange": "$$",
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Neka ADRESA", // 
+            "streetAddress": "Gregurić breg 48a", // 
             "addressLocality": "Samobor",
-            "postalCode": "10000",
+            "postalCode": "10430",
             "addressCountry": "HR"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 45.8150, 
-            "longitude": 15.9819 
         },
         "openingHoursSpecification": [
             {

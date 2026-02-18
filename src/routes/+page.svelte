@@ -17,7 +17,7 @@
 
   const services = [
     { title: "Konji u filmu", desc: "Profesionalna priprema za filmske setove.", icon: "🎬" },
-    { title: "Konji za spotove", desc: "Jedinstvena estetika i koreografija.", icon: "🎵" },
+    { title: "Konji za spotove i reklame", desc: "Jedinstvena estetika i koreografija.", icon: "🎵" },
     { title: "Konji za fotografiranje", desc: "Elegancija za modne editorijale.", icon: "📸" },
     { title: "Šetnje na konjima", desc: "Vođene terenske šetnje prirodom.", icon: "🌲" },
     { title: "Prijevoz konja", desc: "Siguran i profesionalan transport.", icon: "🚛" },
