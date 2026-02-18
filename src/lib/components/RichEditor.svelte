@@ -3,7 +3,7 @@
     import { Editor } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
 
-    // Svelte 5 Props - primamo vrijednost (bindable)
+    // Svelte 5 Props
     let { value = $bindable('') } = $props();
 
     let element = $state<HTMLElement>();
@@ -13,18 +13,31 @@
         editor = new Editor({
             element: element,
             extensions: [StarterKit],
-            content: value,
+            content: value, // Postavlja početnu vrijednost
             editorProps: {
-                // Tailwind klase za sam tekst unutra
                 attributes: {
-                   class: 'prose prose-invert prose-sm sm:prose-base max-w-none focus:outline-none min-h-[150px] text-white'
+                   class: 'prose prose-invert prose-sm sm:prose-base max-w-none focus:outline-none min-h-[150px] text-white p-4' // Dodao sam p-4 ovdje da tekst nije zalijepljen
                 }
             },
             onUpdate: ({ editor }) => {
-                // Kad korisnik piše, šaljemo HTML natrag roditelju
-                value = editor.getHTML();
+                // Kad korisnik piše -> šaljemo van u 'value'
+                // Ovo je "Output" smjer
+                const html = editor.getHTML();
+                if (html !== value) {
+                    value = html;
+                }
             }
         });
+    });
+
+    // --- NOVO: PRATIMO PROMJENE IZVANA (INPUT SMJER) ---
+    $effect(() => {
+        // Ako editor postoji i ako se 'value' razlikuje od onoga što je u editoru...
+        if (editor && value !== editor.getHTML()) {
+            // ...onda ručno ažuriraj sadržaj editora.
+            // Ovo se događa kad klikneš "Objavi" pa se forma resetira na ""
+            editor.commands.setContent(value);
+        }
     });
 
     onDestroy(() => {
@@ -33,7 +46,7 @@
         }
     });
     
-    // Pomoćna funkcija za aktivne gumbe
+    // Pomoćna funkcija za gumb
     const isActive = (type: string, opts?: any) => editor?.isActive(type, opts) ? 'bg-blue-600 text-white' : 'hover:bg-white/10 text-gray-400';
 </script>
 
@@ -66,10 +79,11 @@
     </div>
     {/if}
 
-    <div bind:this={element} class="p-4"></div>
+    <div bind:this={element}></div>
 </div>
 
 <style>
+    /* Placeholder stil (opcionalno) */
     :global(.ProseMirror p.is-editor-empty:first-child::before) {
         content: attr(data-placeholder);
         float: left;

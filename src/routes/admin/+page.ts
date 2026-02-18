@@ -1,16 +1,32 @@
 import { supabase } from '$lib/supabase';
 import { redirect } from '@sveltejs/kit';
 
-// for better supabase admin panel autg sessions
+// no SSR jer je ovo admin panel (client site rendering)
 export const ssr = false;
 
 export const load = async () => {
+    // chech session
     const { data: { session } } = await supabase.auth.getSession();
 
-    //if there is not main session redirect
     if (!session) {
         throw redirect(303, '/login');
     }
 
-    return { session };
+    // fetch pics from gallery
+    const { data: photos, error: photosError } = await supabase
+        .from("gallery")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    // fetch news 
+    const { data: newsPosts, error: newsError } = await supabase
+        .from("updates")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    return {
+        session,
+        photos: photos || [],
+        newsPosts: newsPosts || []
+    };
 };
