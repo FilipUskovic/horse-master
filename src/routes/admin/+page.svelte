@@ -1,39 +1,37 @@
 <script lang="ts">
-  import { onDestroy } from "svelte"; // Maknuli smo onMount jer podaci dolaze iz +page.ts
+  import { onDestroy } from "svelte";
   import { supabase } from "$lib/supabase";
   import { fade, fly, scale, slide } from "svelte/transition";
+  import { quintOut } from "svelte/easing";
   import { toast } from "$lib/toast.svelte";
   import ConfirmModal from "$lib/components/ConfirmModal.svelte";
   import { compressImage } from "$lib/ImageUtils";
   import RichEditor from "$lib/components/RichEditor.svelte";
-  import { invalidateAll } from "$app/navigation"; // KLJUČNO: Za osvježavanje podataka
+  import { invalidateAll } from "$app/navigation";
 
-  // 1. PRIMANJE PODATAKA IZ +page.ts
-  // data.photos i data.newsPosts su sada dostupni odmah!
+  // fetch data form ts file
   let { data } = $props();
 
-  // --- global states ---
+  // --- Globalni states---
   let uploadProgress = $state(0);
   let confirmShow = $state(false);
   let confirmTitle = $state("");
   let confirmMessage = $state("");
   let confirmAction = $state<() => void>(() => {});
 
-  // --- gallery form states ---
+  // --- Forme fallery ---
   let uploading = $state(false);
   let title = $state("");
   let file = $state<File | null>(null);
   let previewUrl = $state<string | null>(null);
 
-  // --- news form states ---
+  // --- Forme news ---
   let newsTitle = $state("");
   let newsContent = $state("");
   let newsFile = $state<File | null>(null);
   let newsPreviewUrl = $state<string | null>(null);
   let newsLoading = $state(false);
   let editingId = $state<string | null>(null);
-  
-  // Varijabla za resetiranje editora
   let editorKey = $state(0);
 
   onDestroy(() => {
@@ -41,7 +39,11 @@
     if (newsPreviewUrl) URL.revokeObjectURL(newsPreviewUrl);
   });
 
-  // --- modal actions ---
+
+  async function refreshData() {
+    await invalidateAll();
+  }
+
   function openConfirm(title: string, message: string, action: () => void) {
     confirmTitle = title;
     confirmMessage = message;
@@ -49,14 +51,7 @@
     confirmShow = true;
   }
 
-  // --- HELPER: OSVJEŽI PODATKE ---
-  // Umjesto fetchPhotos() i fetchNews(), zovemo ovo.
-  // To će ponovno okinuti load funkciju u +page.ts
-  async function refreshData() {
-    await invalidateAll();
-  }
-
-  // --- GALLERY LOGIC ---
+  // --- pohotos adn new logic---
 
   function handleFileChange(e: Event) {
     const target = e.target as HTMLInputElement;
@@ -67,17 +62,36 @@
     }
   }
 
+  function handleNewsFileChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      if (newsPreviewUrl) URL.revokeObjectURL(newsPreviewUrl);
+      newsFile = target.files[0];
+      newsPreviewUrl = URL.createObjectURL(newsFile);
+    }
+  }
+
+  function removeNewsImage(e: Event) {
+    e.preventDefault();
+    newsPreviewUrl = null;
+    newsFile = null;
+  }
+
+
   async function uploadPhoto() {
     if (!file) return;
     uploading = true;
-    uploadProgress = 10;
+    uploadProgress = 5; // Počinjemo odmah s malo pomaka
     toast.add("Slanje slike...", "info");
 
     try {
       const compressedBlob = await compressImage(file);
+      
       const interval = setInterval(() => {
-        if (uploadProgress < 90) uploadProgress += 5;
-      }, 300);
+        if (uploadProgress < 92) {
+          uploadProgress += (Math.random() * 7); // simuliraj pomak
+        }
+      }, 250);
 
       const fileName = `${Date.now()}-${file.name.replace(/\.[^/.]+$/, "")}.jpg`;
 
@@ -88,22 +102,22 @@
       if (storageError) throw storageError;
 
       clearInterval(interval);
-      uploadProgress = 100;
+      uploadProgress = 100; 
 
       const { data: { publicUrl } } = supabase.storage.from("photos").getPublicUrl(fileName);
       await supabase.from("gallery").insert([{ image_url: publicUrl, title: title }]);
 
       toast.add("Slika je u galeriji!", "success");
       resetForm();
-      
-      // Osvježi podatke
       await refreshData();
 
     } catch (err: any) {
       toast.add("Greška: " + err.message, "error");
     } finally {
-      uploading = false;
-      setTimeout(() => (uploadProgress = 0), 1000);
+      setTimeout(() => {
+        uploading = false;
+        uploadProgress = 0;
+      }, 800);
     }
   }
 
@@ -112,40 +126,14 @@
       const fileName = imageUrl.split("/").pop();
       if (fileName) await supabase.storage.from("photos").remove([fileName]);
       await supabase.from("gallery").delete().eq("id", id);
-      
       toast.add("Slika obrisana.", "success");
-      await refreshData(); // Osvježi
+      await refreshData();
     } catch (err) {
       toast.add("Greška pri brisanju.", "error");
     }
   }
 
-  function resetForm() {
-    title = "";
-    file = null;
-    previewUrl = null;
-  }
-
-  // --- NEWS LOGIC ---
-
-  function handleNewsFileChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    if (target.files && target.files.length > 0) {
-      if (newsPreviewUrl) URL.revokeObjectURL(newsPreviewUrl);
-      newsFile = target.files[0];
-      newsPreviewUrl = URL.createObjectURL(newsFile);
-    }
-  }
-
-  // NOVO: Funkcija za micanje slike kod novosti
-  function removeNewsImage(e: Event) {
-    e.preventDefault();
-    e.stopPropagation();
-    newsPreviewUrl = null;
-    newsFile = null;
-    const input = document.getElementById("news-upload") as HTMLInputElement;
-    if (input) input.value = "";
-  }
+  function resetForm() { title = ""; file = null; previewUrl = null; }
 
   async function uploadNews() {
     if (!newsTitle || !newsContent) {
@@ -155,35 +143,24 @@
     newsLoading = true;
     try {
       let finalImageUrl = newsPreviewUrl;
-      
-      // Ako imamo novi file, uploadamo ga
       if (newsFile) {
         const fileName = `news/${Date.now()}-${newsFile.name}`;
         await supabase.storage.from("photos").upload(fileName, newsFile);
         const { data } = supabase.storage.from("photos").getPublicUrl(fileName);
         finalImageUrl = data.publicUrl;
       }
-      // Ako je newsPreviewUrl null (korisnik obrisao sliku), finalImageUrl ostaje null -> briše se iz baze
 
-      const payload = {
-        title: newsTitle,
-        content: newsContent,
-        image_url: finalImageUrl,
-      };
+      const payload = { title: newsTitle, content: newsContent, image_url: finalImageUrl };
 
       if (editingId) {
-        const { error } = await supabase.from("updates").update(payload).eq("id", editingId);
-        if (error) throw error;
+        await supabase.from("updates").update(payload).eq("id", editingId);
         toast.add("Promjene spremljene!", "success");
       } else {
-        const { error } = await supabase.from("updates").insert([payload]);
-        if (error) throw error;
+        await supabase.from("updates").insert([payload]);
         toast.add("Novost objavljena!", "success");
       }
-
       resetNewsForm();
-      await refreshData(); // Osvježi
-
+      await refreshData();
     } catch (err: any) {
       toast.add("Greška: " + err.message, "error");
     } finally {
@@ -198,178 +175,161 @@
         if (fileName) await supabase.storage.from("photos").remove([`news/${fileName}`]);
       }
       await supabase.from("updates").delete().eq("id", id);
-      
       toast.add("Vijest obrisana.", "success");
-      await refreshData(); // Osvježi
+      await refreshData();
     } catch (err) {
       toast.add("Greška pri brisanju.", "error");
     }
   }
 
   function editNews(post: any) {
-    editingId = post.id;
-    newsTitle = post.title;
-    newsContent = post.content;
-    newsPreviewUrl = post.image_url;
-    
-    // Ovdje NE resetiramo editorKey jer želimo učitati tekst
-    // Ako RichEditor ne prikazuje tekst, dodaj editorKey++ ovdje
+    editingId = post.id; newsTitle = post.title; newsContent = post.content; newsPreviewUrl = post.image_url;
     editorKey++; 
-
-    const formElement = document.getElementById("news-form-container");
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    document.getElementById("news-form-container")?.scrollIntoView({ behavior: "smooth" });
   }
 
-  function resetNewsForm() {
-    editingId = null;
-    newsTitle = "";
-    newsContent = "";
-    newsFile = null;
-    newsPreviewUrl = null;
-    editorKey++; // Forsira ponovno stvaranje editora (briše tekst)
-    
-    const input = document.getElementById("news-upload") as HTMLInputElement;
-    if (input) input.value = "";
-  }
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+  function resetNewsForm() { editingId = null; newsTitle = ""; newsContent = ""; newsFile = null; newsPreviewUrl = null; editorKey++; }
+  
+  async function handleLogout() { 
+    await supabase.auth.signOut(); 
+    window.location.href = "/login"; 
   }
 </script>
 
-<div class="min-h-screen bg-gray-100 pb-20 font-sans" in:fade>
-  <nav class="bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 sm:px-6 py-4 mb-8 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <a href="/" class="group flex items-center">
-        <h1 class="text-lg sm:text-xl font-black tracking-tighter text-gray-900 uppercase">
-          H<span class="text-blue-600">M</span><span class="hidden xs:inline">ORSEMASTER</span>
-          <span class="text-gray-400 font-light ml-1 sm:ml-2 text-[8px] sm:text-[10px] tracking-widest border-l pl-2 sm:pl-3 border-gray-200 uppercase">Admin</span>
-        </h1>
-      </a>
+<div class="min-h-screen bg-brandDark text-brandLight font-sans pb-20 relative overflow-hidden" in:fade>
+  
+  <div class="fixed inset-0 pointer-events-none z-0">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brandBlue/5 blur-[120px] rounded-full"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brandDeep/20 blur-[120px] rounded-full"></div>
+  </div>
 
-      <div class="flex items-center gap-2 sm:gap-4">
-        <a href="/" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors p-2 sm:px-4 sm:py-2 rounded-xl hover:bg-blue-50">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-          <span class="hidden md:inline">Pogledaj stranicu</span>
+  <nav class="bg-brandDark/40 backdrop-blur-xl border-b border-white/5 px-6 py-5 mb-12 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-black tracking-tighter uppercase italic">
+          HORSE<span class="text-brandBlue blue-glow">MASTER</span>
+          <span class="text-white/20 font-mono ml-4 text-[10px] tracking-[0.4em] border-l border-white/10 pl-4 uppercase not-italic">Admin</span>
+      </h1>
+      <div class="flex items-center gap-6">
+        <a href="/" class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-brandBlue transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Sajt
         </a>
-
-        <button onclick={handleLogout} class="group flex items-center gap-2 sm:gap-3 bg-gray-50 hover:bg-red-50 p-1.5 sm:pr-4 rounded-2xl transition-all duration-300 border border-gray-100 hover:border-red-100">
-          <div class="w-8 h-8 bg-white rounded-xl shadow-sm flex items-center justify-center group-hover:text-red-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-          </div>
-          <span class="hidden sm:inline text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-red-500 transition-colors">Odjava</span>
+        <button onclick={handleLogout} class="text-[10px] font-black uppercase tracking-[0.3em] text-red-500/60 hover:text-red-500 transition-colors flex items-center gap-2" aria-label="Odjavi se">
+            Odjava
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         </button>
       </div>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-4 space-y-16">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-      <div class="lg:col-span-1" in:fly={{ x: -30, duration: 600, delay: 200 }}>
-        <div class="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 sticky top-24">
-          <h2 class="text-2xl font-black text-gray-900 mb-6 uppercase tracking-tight">Nova Slika</h2>
-          <div class="space-y-4">
-            <input type="text" bind:value={title} class="w-full bg-gray-50 border-2 border-gray-100 rounded-2xl p-4 outline-none focus:border-blue-600 transition" placeholder="Naslov slike..." />
+  <main class="max-w-7xl mx-auto px-6 space-y-24 relative z-10">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div class="lg:col-span-4">
+        <div class="glass-card rounded-[2.5rem] p-8 space-y-8 sticky top-32">
+          <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">Nova Slika</h2>
+          <div class="space-y-6">
+            <div class="space-y-2">
+                <label for="img-title" class="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Naslov slike</label>
+                <input id="img-title" type="text" bind:value={title} class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-medium outline-none focus:border-brandBlue transition-all text-white" placeholder="Naslov..." />
+            </div>
+
             <input id="image-upload" type="file" onchange={handleFileChange} accept="image/*" class="hidden" />
-            <label for="image-upload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer bg-gray-50 overflow-hidden hover:bg-gray-100 transition">
+            <label for="image-upload" class="relative flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-white/5 rounded-[2rem] cursor-pointer bg-white/[0.02] hover:bg-brandBlue/5 transition-all overflow-hidden group">
               {#if previewUrl}
-                <img src={previewUrl} alt="Preview" loading="lazy" decoding="async" class="w-full h-full object-cover" in:fade />
+                <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" />
               {:else}
-                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">Odaberi datoteku</span>
+                <span class="text-[10px] font-black text-white/20 uppercase tracking-widest text-center">Odaberi datoteku</span>
               {/if}
             </label>
+
             {#if uploading}
-              <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mt-2" transition:slide>
-                <div class="bg-blue-600 h-full transition-all duration-300" style="width: {uploadProgress}%"></div>
-              </div>
+                <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden" transition:slide>
+                    <div class="bg-brandBlue h-full transition-all duration-300 shadow-[0_0_10px_rgba(37,99,235,0.5)]" style="width: {uploadProgress}%"></div>
+                </div>
             {/if}
-            <button onclick={uploadPhoto} disabled={uploading || !file} class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase text-xs shadow-lg active:scale-95 transition disabled:opacity-50">Objavi Sliku</button>
+
+            <button onclick={uploadPhoto} disabled={uploading || !file} class="group relative w-full bg-brandBlue text-white font-black py-5 rounded-2xl uppercase text-[10px] tracking-[0.3em] overflow-hidden transition-all active:scale-95 disabled:opacity-30">
+                <span class="relative z-10">{uploading ? 'Slanje...' : 'Objavi'}</span>
+                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
+            </button>
           </div>
         </div>
       </div>
       
-      <div class="lg:col-span-2">
-        <h2 class="text-xl font-black mb-6 uppercase tracking-tight flex items-center gap-3">
-          Aktivna Galerija <span class="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-[10px]">{data.photos.length}</span>
+      <div class="lg:col-span-8">
+        <h2 class="text-xl font-black uppercase tracking-widest italic text-white/40 mb-8 flex items-center gap-4">
+            Aktivna Galerija <span class="text-[10px] font-mono bg-brandBlue/10 text-brandBlue px-3 py-1 rounded-full not-italic tracking-normal">{data.photos.length}</span>
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
           {#each data.photos as p (p.id)}
-            <div class="relative group aspect-square rounded-2xl overflow-hidden shadow-lg" in:scale>
-              <img src={p.image_url} alt="" loading="lazy" decoding="async" class="w-full h-full object-cover" />
-              <button onclick={() => openConfirm("Obriši sliku?", "Trajno uklanjanje iz baze.", () => deletePhoto(p.id, p.image_url))} class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition shadow-xl font-bold">✕</button>
+            <div class="group relative aspect-square rounded-[2rem] overflow-hidden bg-white/5 border border-white/5" in:scale={{ duration: 600, easing: quintOut }}>
+              <img src={p.image_url} alt={p.title} class="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
+              <button onclick={() => openConfirm("Obriši sliku?", "Trajno uklanjanje iz baze.", () => deletePhoto(p.id, p.image_url))} 
+                      class="absolute top-4 right-4 bg-red-500 text-white p-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all shadow-2xl"
+                      aria-label="Obriši sliku {p.title}" title="Obriši sliku">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           {/each}
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 border-t pt-16 border-gray-200">
-      <div id="news-form-container" class="lg:col-span-1" in:fly={{ x: -30, duration: 600, delay: 200 }}>
-        <div class="bg-gray-900 rounded-3xl p-8 shadow-xl text-white sticky top-24">
-          <h2 class="text-2xl font-black mb-6 uppercase tracking-tight">
-            {editingId ? "Uredi Obavijest" : "Nova Obavijest"}
-          </h2>
-          <div class="space-y-4">
-            <input type="text" bind:value={newsTitle} class="w-full bg-white/10 border-2 border-white/10 rounded-2xl p-4 outline-none focus:border-blue-500 transition text-white" placeholder="Naslov vijesti..." />
-
-            <div class="mb-2">
-              <p class="text-xs uppercase font-bold tracking-widest mb-2 block text-gray-400">Sadržaj</p>
-              
-              {#key editorKey}
-                <RichEditor bind:value={newsContent} />
-              {/key}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-24 border-t border-white/5">
+      <div id="news-form-container" class="lg:col-span-5">
+        <div class="glass-card rounded-[3rem] p-10 space-y-10 sticky top-32">
+          <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">{editingId ? "Uredi" : "Nova"} Obavijest</h2>
+          <div class="space-y-8">
+            <div class="space-y-2">
+                <label for="news-title-input" class="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Naslov Vijesti</label>
+                <input id="news-title-input" type="text" bind:value={newsTitle} class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-brandLight outline-none focus:border-brandBlue transition-all text-white" placeholder="Naslov..." />
             </div>
-
+            <div class="space-y-4">
+              <label for="rich-editor-wrapper" class="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] ml-2">Sadržaj</label>
+              <div id="rich-editor-wrapper" class="bg-white/5 rounded-3xl overflow-hidden border border-white/5">
+                {#key editorKey} <RichEditor bind:value={newsContent} /> {/key}
+              </div>
+            </div>
             <input id="news-upload" type="file" onchange={handleNewsFileChange} accept="image/*" class="hidden" />
-            <label for="news-upload" class="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer bg-white/5 hover:bg-white/10 overflow-hidden transition group">
+            <label for="news-upload" class="relative flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-white/5 rounded-[2rem] cursor-pointer bg-white/[0.02] hover:bg-brandBlue/5 transition-all overflow-hidden group">
               {#if newsPreviewUrl}
-                <img src={newsPreviewUrl} alt="Preview" loading="lazy" decoding="async" class="w-full h-full object-cover" in:fade />
-                <button 
-                  onclick={removeNewsImage} 
-                  class="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-700 shadow-md z-10 transition-transform hover:scale-110"
-                  title="Ukloni sliku"
-                >
-                  ✕
-                </button>
+                <img src={newsPreviewUrl} alt="Preview" class="w-full h-full object-cover" />
+                <button onclick={removeNewsImage} class="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 shadow-md z-10 transition-all active:scale-90" title="Ukloni sliku" aria-label="Ukloni sliku">✕</button>
               {:else}
-                <span class="text-[10px] font-black text-white/40 uppercase tracking-widest text-center px-4">Slika (Opcionalno)</span>
+                <span class="text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">Dodaj fotografiju</span>
               {/if}
             </label>
-
-            <div class="flex gap-2">
-              <button onclick={uploadNews} disabled={newsLoading} class="flex-grow bg-white text-gray-900 font-black py-4 rounded-2xl uppercase text-xs hover:bg-blue-500 hover:text-white transition active:scale-95">
-                {newsLoading ? "Spremanje..." : editingId ? "Spremi Promjene" : "Objavi Novost"}
+            <div class="flex gap-4">
+              <button onclick={uploadNews} disabled={newsLoading} class="group relative flex-grow bg-brandLight text-brandDark font-black py-6 rounded-2xl uppercase text-[10px] tracking-[0.4em] overflow-hidden transition-all active:scale-95 disabled:opacity-30">
+                <span class="relative z-10">{newsLoading ? "Spremanje..." : "Objavi"}</span>
+                <div class="absolute inset-0 bg-brandBlue translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
               </button>
               {#if editingId}
-                <button onclick={resetNewsForm} class="bg-red-600 text-white px-5 rounded-2xl hover:bg-red-700 transition" in:scale>✕</button>
+                <button onclick={resetNewsForm} class="bg-red-500/10 text-red-500 px-6 rounded-2xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all" aria-label="Odustani">✕</button>
               {/if}
             </div>
           </div>
         </div>
       </div>
 
-      <div class="lg:col-span-2">
-        <h2 class="text-xl font-black mb-6 uppercase tracking-tight">Popis Novosti ({data.newsPosts.length})</h2>
-        <div class="space-y-4">
+      <div class="lg:col-span-7 space-y-8">
+        <h2 class="text-xl font-black uppercase tracking-widest italic text-white/40 mb-10">Arhiva Novosti</h2>
+        <div class="space-y-6">
           {#each data.newsPosts as post (post.id)}
-            <div class="bg-white p-6 rounded-[2rem] shadow-md border border-gray-100 flex gap-6 items-start hover:border-blue-200 transition-colors" in:fly={{ x: 20 }}>
+            <div class="group bg-brandDeep/10 p-8 rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row gap-8 items-start hover:border-brandBlue/30 transition-all duration-500" in:fly={{ x: 20 }}>
               {#if post.image_url}
-                <img src={post.image_url} alt="" loading="lazy" decoding="async" class="w-24 h-24 rounded-2xl object-cover flex-shrink-0" />
+                <img src={post.image_url} alt="" class="w-full md:w-32 h-32 rounded-2xl object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" />
               {/if}
-              <div class="flex-grow">
-                <h3 class="font-black text-lg uppercase leading-tight">{post.title}</h3>
-                <div class="prose prose-sm prose-blue text-gray-500 mt-2 line-clamp-3">{@html post.content}</div>
-                
-                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-50">
-                  <span class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">{new Date(post.created_at).toLocaleDateString("hr-HR")}</span>
-                  <div class="flex gap-4">
-                    <button onclick={() => editNews(post)} class="text-blue-500 font-black text-[10px] uppercase hover:underline tracking-widest">Uredi</button>
-                    <button onclick={() => openConfirm("Obriši vijest?", "Trajno uklanjanje.", () => deleteNews(post.id, post.image_url))} class="text-red-500 font-bold text-[10px] uppercase hover:underline tracking-widest">Obriši</button>
-                  </div>
+              <div class="flex-grow space-y-4 text-left">
+                <div class="flex justify-between items-start">
+                    <span class="text-[9px] font-black text-brandBlue uppercase tracking-[0.4em]">{new Date(post.created_at).toLocaleDateString("hr-HR")}</span>
+                    <div class="flex gap-4">
+                        <button onclick={() => editNews(post)} class="text-white/20 font-black text-[9px] uppercase hover:text-brandBlue tracking-widest transition-colors" aria-label="Uredi vijest {post.title}">Uredi</button>
+                        <button onclick={() => openConfirm("Obriši vijest?", "Trajno uklanjanje.", () => deleteNews(post.id, post.image_url))} class="text-red-500/40 font-black text-[9px] uppercase hover:text-red-500 tracking-widest transition-colors" aria-label="Obriši vijest {post.title}">Obriši</button>
+                    </div>
                 </div>
+                <h3 class="font-black text-2xl uppercase italic text-brandLight leading-tight">{post.title}</h3>
               </div>
             </div>
           {/each}
@@ -380,3 +340,15 @@
 
   <ConfirmModal bind:show={confirmShow} title={confirmTitle} message={confirmMessage} onConfirm={confirmAction} />
 </div>
+
+<style>
+    .blue-glow { text-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+    .glass-card { @apply bg-brandDeep/20 backdrop-blur-xl border border-white/5 shadow-2xl; }
+    
+    :global(body) { 
+        scrollbar-width: none; 
+        -ms-overflow-style: none; 
+        background-color: #050505; 
+    }
+    :global(body::-webkit-scrollbar) { display: none; }
+</style>

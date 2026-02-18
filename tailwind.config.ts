@@ -6,6 +6,16 @@ export default {
 
   theme: {
     extend: {
+      colors: {
+        //main backroaud
+        brandDark: '#050505',
+        // blue
+        brandBlue: '#2563eb',
+        // cool white
+        brandLight: '#f0f2f5', 
+        // brutalan plava
+        brandDeep: '#0a192f',
+      },
       //  Custom Animacije
       keyframes: {
         'gradient-x': {

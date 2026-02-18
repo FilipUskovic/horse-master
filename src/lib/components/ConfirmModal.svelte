@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { fade, scale } from 'svelte/transition';
+    import { fade, scale, fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
 
-    // onCancel je sada opcionalan
+    // Svelte 5 Props (Zadržana tvoja logika)
     let { 
         show = $bindable(false), 
         title = "Jeste li sigurni?", 
@@ -24,45 +24,50 @@
 
 {#if show}
     <div 
-        class="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-gray-950/40 backdrop-blur-sm" 
-        transition:fade={{ duration: 200 }}
+        class="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-brandDark/80 backdrop-blur-xl" 
+        transition:fade={{ duration: 300 }}
         role="dialog"
         aria-modal="true"
     >
         <button 
             type="button" 
-            class="absolute inset-0 w-full h-full cursor-default bg-transparent border-none" 
+            class="absolute inset-0 w-full h-full cursor-default bg-transparent border-none outline-none" 
             onclick={handleCancel}
-            aria-label="Zatvori"
+            aria-label="Zatvori modal"
         ></button>
 
         <div 
-            class="relative bg-white rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl border border-gray-100 text-center pointer-events-auto"
-            transition:scale={{ duration: 400, start: 0.9, easing: quintOut }}
+            class="relative bg-brandDark/95 rounded-[3rem] p-10 md:p-14 max-w-md w-full shadow-[0_30px_100px_rgba(0,0,0,0.8)] border border-white/5 text-center pointer-events-auto overflow-hidden"
+            transition:scale={{ duration: 500, start: 0.9, easing: quintOut }}
         >
-            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+            <div class="absolute -top-20 -left-20 w-40 h-40 bg-red-500/10 blur-[80px] rounded-full"></div>
+
+            <div class="relative w-20 h-20 bg-red-500/10 border border-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl font-black shadow-[0_0_30px_rgba(239,68,68,0.15)] italic">
                 !
             </div>
 
-            <h3 class="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter">
+            <h3 class="text-3xl font-black text-brandLight mb-4 uppercase italic tracking-tighter">
                 {title}
             </h3>
             
-            <p class="text-gray-500 font-medium mb-8 leading-relaxed">
+            <p class="text-brandLight/40 text-lg font-light mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
                 {message}
             </p>
             
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-4">
                 <button 
+                    type="button"
                     onclick={handleConfirm} 
-                    class="w-full py-4 bg-red-600 text-white font-black rounded-2xl hover:bg-red-700 transition active:scale-95 uppercase tracking-widest text-xs"
+                    class="group relative w-full py-6 bg-red-600 text-white font-black rounded-2xl transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-[0.3em] text-[10px] overflow-hidden shadow-2xl shadow-red-900/20"
                 >
-                    Da, potvrđujem
+                    <span class="relative z-10">Potvrđujem</span>
+                    <div class="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
                 </button>
 
                 <button 
+                    type="button"
                     onclick={handleCancel} 
-                    class="w-full py-4 bg-gray-100 text-gray-900 font-black rounded-2xl hover:bg-gray-200 transition uppercase tracking-widest text-xs"
+                    class="w-full py-6 bg-white/5 text-brandLight/60 font-black rounded-2xl hover:bg-white/10 hover:text-brandLight transition-all uppercase tracking-[0.3em] text-[10px] border border-white/5"
                 >
                     Odustani
                 </button>
@@ -70,3 +75,13 @@
         </div>
     </div>
 {/if}
+
+<style>
+    /* stop treptanje click on mobile  */
+    button { -webkit-tap-highlight-color: transparent; }
+
+    /* Fix za scroll lock when modal opened */
+    :global(body:has([role="dialog"])) {
+        overflow: hidden;
+    }
+</style>

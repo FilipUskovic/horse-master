@@ -32,7 +32,7 @@
     <title>Horse Master</title>
 </svelte:head>
 
-<div class="flex flex-col min-h-screen font-sans text-[#f0f0f0] antialiased bg-[#050505]">
+<div class="flex flex-col min-h-screen font-sans text-brandLight antialiased bg-brandDark">
     {#if !isAdmin}
         <Navbar />
     {/if}
@@ -40,7 +40,7 @@
     <Toaster />
     <CookieConsent />
 
-    <main class="flex-grow {isAdmin ? '' : 'pt-16 pb-24 sm:pb-0'}">
+    <main class="flex-grow {isAdmin ? '' : 'pt-0 pb-24 sm:pb-0'}">
         {@render children()}
     </main>
 
