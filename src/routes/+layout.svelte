@@ -32,7 +32,7 @@
     <title>Horse Master</title>
 </svelte:head>
 
-<div class="flex flex-col min-h-screen font-sans text-gray-900 antialiased bg-gray-50">
+<div class="flex flex-col min-h-screen font-sans text-[#f0f0f0] antialiased bg-[#050505]">
     {#if !isAdmin}
         <Navbar />
     {/if}

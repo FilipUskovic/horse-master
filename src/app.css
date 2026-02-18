@@ -36,3 +36,19 @@
     @apply text-blue-400;
   }
 }
+
+
+/* Forsiranje tamne teme na razini sustava */
+:root {
+    background-color: #050505;
+    color: #f0f0f0;
+}
+
+body {
+    background-color: #050505;
+}
+
+/* Fix za iOS elastični scroll (da ne "proviri" bijelo kad povučeš ekran) */
+html {
+    background-color: #050505;
+}
