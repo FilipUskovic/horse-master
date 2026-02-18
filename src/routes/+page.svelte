@@ -37,6 +37,16 @@
             title: 'Šetnje na konjima', 
             desc: 'Vođene terenske šetnje prirodom prilagođene vašem iskustvu.',
             icon: '🌲' 
+        },
+        { 
+            title: 'Prijevoz konja', 
+            desc: 'Siguran i profesionalan transport konja na željene lokacije uz vrhunsku opremu.',
+            icon: '🚛' 
+        },
+        { 
+            title: 'Kaskaderske usluge', 
+            desc: 'Specijalno obučeni konji i iskusni jahači za najzahtjevnije akcijske scene, padove i bitke.',
+            icon: '🏇' 
         }
     ];
 
