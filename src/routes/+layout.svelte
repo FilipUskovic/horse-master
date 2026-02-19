@@ -10,8 +10,10 @@
 
     let { children } = $props();
 
-    // check if is in admin section
-    const isAdmin = $derived(page.url.pathname.startsWith('/admin'));
+    const hideLayout = $derived(
+    page.url.pathname.startsWith('/admin') || 
+    page.url.pathname.startsWith('/usluge')
+);
 
     onNavigate((navigation) => {
         // if view transation is not posiible - contune normally
@@ -33,18 +35,18 @@
 </svelte:head>
 
 <div class="flex flex-col min-h-screen font-sans text-brandLight antialiased bg-brandDark">
-    {#if !isAdmin}
+    {#if !hideLayout}
         <Navbar />
     {/if}
 
     <Toaster />
     <CookieConsent />
 
-    <main class="flex-grow {isAdmin ? '' : 'pt-0 pb-24 sm:pb-0'}">
+    <main class="flex-grow {hideLayout ? '' : 'pt-0 pb-24 sm:pb-0'}">
         {@render children()}
     </main>
 
-    {#if !isAdmin}
+    {#if !hideLayout}
         <Footer />
     {/if}
 </div>

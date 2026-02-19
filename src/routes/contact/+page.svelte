@@ -2,6 +2,7 @@
     import { PUBLIC_WEB3FORMS_ACCESS_KEY } from '$env/static/public';
     import { fade, scale, slide, fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
+    import { goto } from '$app/navigation'; // <-- Dodano za povratak
 
     // Svelte 5 Runes
     let name = $state("");
@@ -73,29 +74,47 @@
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brandBlue/5 blur-[120px] rounded-full"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brandDeep/20 blur-[120px] rounded-full"></div>
 </div>
-
 <div class="fixed inset-0 pointer-events-none z-[900] opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
 <section class="min-h-screen bg-brandDark py-24 px-6 flex items-center justify-center relative z-10">
     
     <div class="max-w-xl w-full glass-card p-10 md:p-14 rounded-[3rem] relative overflow-hidden border border-white/5 shadow-2xl">
         
+        <button 
+            onclick={() => goto('/')} 
+            class="absolute top-6 right-6 p-3 bg-white/5 hover:bg-white/10 rounded-full text-brandLight/50 hover:text-white transition-all z-50 focus:outline-none"
+            aria-label="Odustani i vrati se na početnu"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
         {#if isSuccess}
-            <div in:fly={{ y: 20, duration: 800, easing: quintOut }} class="text-center py-10 relative z-10">
-                <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-brandBlue/10 border border-brandBlue/20 mb-8">
-                    <svg class="h-10 w-10 text-brandBlue blue-glow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+            <div in:fly={{ y: 20, duration: 800, easing: quintOut }} class="text-center py-6 relative z-10 flex flex-col items-center">
+                <div class="flex items-center justify-center h-24 w-24 rounded-full bg-brandBlue/10 border border-brandBlue/20 mb-8">
+                    <svg class="h-12 w-12 text-brandBlue blue-glow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
                 </div>
-                <h2 class="text-4xl font-black text-brandLight tracking-tighter uppercase italic">Poslano!</h2>
-                <p class="text-brandLight/40 mt-4 text-lg font-light">
-                    Hvala vam, <span class="text-brandBlue font-bold">{submittedName}</span>. <br> Javit ćemo se uskoro.
+                
+                <h2 class="text-4xl md:text-5xl font-black text-brandLight tracking-tighter uppercase italic mb-4">Poslano!</h2>
+                
+                <p class="text-brandLight/60 text-lg font-light mb-10">
+                    Hvala vam, <span class="text-brandLight font-bold">{submittedName}</span>. <br> Javit ćemo se u najkraćem roku.
                 </p>
+                
+                <button 
+                    onclick={() => goto('/')} 
+                    class="w-full bg-brandBlue text-white font-black py-5 rounded-2xl overflow-hidden transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:bg-blue-500 uppercase tracking-[0.3em] text-[10px]"
+                >
+                    Povratak na početnu
+                </button>
+
                 <button 
                     onclick={() => isSuccess = false} 
-                    class="mt-12 text-[10px] font-black uppercase tracking-[0.4em] text-brandBlue hover:text-brandLight transition-colors cursor-pointer"
+                    class="mt-8 text-[9px] font-black uppercase tracking-[0.4em] text-brandLight/40 hover:text-brandBlue transition-colors cursor-pointer"
                 >
-                    &larr; Pošalji novu poruku
+                    Pošalji novi upit umjesto toga
                 </button>
             </div>
+
         {:else}
             <div class="relative z-10" in:fade>
                 <div class="mb-14">
@@ -170,7 +189,7 @@
                         disabled={isSubmitting} 
                         class="group relative w-full bg-brandLight text-brandDark font-black py-6 rounded-2xl overflow-hidden transition-all active:scale-[0.98] disabled:opacity-50"
                     >
-                        <span class="relative z-10 uppercase tracking-[0.4em] text-[10px]">
+                        <span class="relative z-10 uppercase tracking-[0.4em] text-[10px] group-hover:text-white transition-colors duration-500">
                             {isSubmitting ? 'Slanje...' : 'Pošalji Upit'}
                         </span>
                         <div class="absolute inset-0 bg-brandBlue translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
@@ -191,5 +210,10 @@
     }
     .glass-card {
         @apply bg-brandDeep/20 backdrop-blur-xl border border-white/5 shadow-2xl;
+    }
+    
+    /* Uklanja defaultnu plavu crtu na mobitelima pri kliku */
+    button {
+        -webkit-tap-highlight-color: transparent;
     }
 </style>

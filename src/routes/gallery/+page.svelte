@@ -23,10 +23,7 @@
     let supabasePhotos = $state<GalleryImage[]>([]);
     let selectedImage = $state<string | null>(null);
     let isLoading = $state(true);
-    let scrollY = $state(0);
-    let innerWidth = $state(0);
 
-    // svelte 5 image connect
     let allImages = $derived([...localImages, ...supabasePhotos]);
 
     onMount(async () => {
@@ -49,21 +46,20 @@
     const openImage = (url: string) => (selectedImage = url);
     const closeImage = () => (selectedImage = null);
 
+    // Optimiziran observer - kad se element pojavi, više ga ne promatramo!
     function reveal(node: HTMLElement, delay = 0) {
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     setTimeout(() => node.classList.add('visible'), delay);
-                    observer.unobserve(node);
+                    observer.unobserve(node); // PREVENCIJA LAGA
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.05 });
         observer.observe(node);
         return { destroy: () => observer.disconnect() };
     }
 </script>
-
-<svelte:window bind:scrollY bind:innerWidth />
 
 <SEO 
     title="Galerija - Foto Reportaža | HorseMaster Prestige" 
@@ -83,7 +79,7 @@
         <div class="mb-24 flex flex-col md:flex-row justify-between items-end gap-10">
             <div class="reveal-init" use:reveal>
                 <div class="overflow-hidden">
-                    <h1 in:fly={{ y: 100, duration: 1200, easing: quintOut }} class="text-[12vw] md:text-[7vw] leading-[0.85] font-black tracking-tighter uppercase mb-4">
+                    <h1 in:fly={{ y: 80, duration: 1000, easing: quintOut }} class="text-[12vw] md:text-[7vw] leading-[0.85] font-black tracking-tighter uppercase mb-4">
                         Foto <br> <span class="text-brandBlue blue-glow italic lowercase tracking-tight">Reportaža</span>
                     </h1>
                 </div>
@@ -113,13 +109,13 @@
                         {img.size === 'tall' ? 'md:row-span-2' : ''}"
                         aria-label="Povećaj sliku: {img.title}"
                     >
-                        <div class="h-full w-full scale-110 transition-transform duration-[1.5s] ease-out group-hover:scale-100">
+                        <div class="h-full w-full scale-105 transition-transform duration-[1.5s] ease-out group-hover:scale-100 will-change-transform">
                             <img 
                                 src={img.image_url} 
                                 alt={img.title}
-                                loading="lazy"
-                                class="h-full w-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
-                                style="transform: translateY({innerWidth > 1024 ? (scrollY - 1000) * 0.02 : 0}px)"
+                                loading={i < 4 ? "eager" : "lazy"} 
+                                decoding="async"
+                                class="h-full w-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700 will-change-[opacity]"
                             />
                         </div>
 
@@ -176,10 +172,11 @@
         text-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
     }
 
-    .reveal-init {
+    :global(.reveal-init) {
         opacity: 0;
-        transform: translateY(40px);
-        transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.2, 1, 0.3, 1), transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+        will-change: opacity, transform;
     }
     
     :global(.reveal-init.visible) {
@@ -187,23 +184,5 @@
         transform: translateY(0);
     }
 
-    :global(body) {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        background-color: #050505;
-    }
-    :global(body::-webkit-scrollbar) {
-        display: none;
-    }
-
-    @keyframes pulseCustom {
-        0%, 100% { opacity: 0.05; }
-        50% { opacity: 0.15; }
-    }
-    .animate-pulse {
-        animation: pulseCustom 2s ease-in-out infinite;
-    }
-
-    /* remove focs on mobile */
     button { -webkit-tap-highlight-color: transparent; }
 </style>
