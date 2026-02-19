@@ -39,7 +39,7 @@
         },
         {
             id: "setnje",
-            title: "Šetnje na Konjima",
+            title: "Šetnje Konja",
             text: "U sklopu vašega važnoga događaja možemo na vašoj lokaciji ponuditi šetnje na konjima za najmlađe, ali i one starije. Upotpunite svoj rođendan ili team-building na otvorenom šetnjom na konjima i budite jedinstveni.",
             img: "/images/djeca.jpg" 
         },
@@ -167,7 +167,7 @@
         scrollbar-color: #2563eb #020202;
     }
 
-    a, button {
+    a {
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
     }
