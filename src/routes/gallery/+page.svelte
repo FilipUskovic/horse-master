@@ -85,22 +85,13 @@
 
   // za mobitel swape
   let touchStartX = 0;
-  let touchEndX = 0;
+    let touchEndX = 0;
 
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX = e.changedTouches[0].screenX;
-  };
-
-  const handleTouchEnd = (e: TouchEvent) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  };
-
-  const handleSwipe = () => {
-    const swipeThreshold = 50; // Minimalna duljina poteza u pikselima da se registrira
-    if (touchEndX < touchStartX - swipeThreshold) nextImage(); // Potez ulijevo
-    if (touchEndX > touchStartX + swipeThreshold) prevImage(); // Potez udesno
-  };
+    const handleSwipe = () => {
+        const swipeThreshold = 50; // Minimalna duljina poteza u pikselima da se registrira
+        if (touchEndX < touchStartX - swipeThreshold) nextImage(); // Potez ulijevo
+        if (touchEndX > touchStartX + swipeThreshold) prevImage(); // Potez udesno
+    };
 </script>
 
 <SEO
