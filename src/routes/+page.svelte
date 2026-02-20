@@ -90,7 +90,8 @@
     {#if loaded}
       <div
         in:scale={{ start: 0.95, duration: 1500, easing: quintOut }}
-        class="w-full h-full">
+        class="w-full h-full"
+      >
         <img
           src="/images/Prva.PNG"
           alt="HorseMaster Hero"
@@ -262,7 +263,7 @@
           Aktualno
         </h2>
         <a
-          href="/gallery"
+          href="/novosti"
           class="text-[10px] font-black uppercase tracking-[0.4em] text-brandBlue hover:text-white transition-colors"
           >Arhiva &rarr;</a
         >
@@ -290,8 +291,9 @@
             <div class="p-10 flex-grow flex flex-col">
               <span
                 class="block text-[10px] font-black text-brandBlue uppercase tracking-widest mb-4"
-                >{new Date(post.created_at).toLocaleDateString("hr-HR")}</span
               >
+                {new Date(post.created_at).toLocaleDateString("hr-HR")}
+              </span>
               <h3
                 class="text-xl font-black uppercase leading-tight text-brandLight mb-6 line-clamp-2"
               >
@@ -300,7 +302,8 @@
               <div
                 class="mt-auto flex items-center text-[10px] font-black uppercase tracking-widest text-brandLight/30 group-hover:text-brandBlue transition-colors"
               >
-                <span>Detaljnije</span><svg
+                <span>Detaljnije</span>
+                <svg
                   class="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform"
                   fill="none"
                   stroke="currentColor"
@@ -316,6 +319,45 @@
             </div>
           </button>
         {/each}
+      </div>
+    </div>
+  </section>
+{:else}
+  <section class="py-32 bg-brandDark border-t border-white/5 relative z-10">
+    <div class="max-w-[1400px] mx-auto px-6">
+      <div class="mb-20 text-center reveal-init" use:reveal>
+        <span
+          class="text-brandBlue font-mono text-xs uppercase tracking-[0.5em] block mb-4"
+          >Aktualno</span
+        >
+        <h2
+          class="text-5xl font-black uppercase tracking-tighter italic text-brandLight leading-none mb-10"
+        >
+          Novosti iz <span class="text-transparent text-stroke-white"
+            >Prestigea</span
+          >
+        </h2>
+        <div
+          class="py-24 flex flex-col items-center justify-center border border-white/5 rounded-[3rem] bg-brandDeep/10"
+        >
+          <svg
+            class="w-12 h-12 text-brandLight/20 mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5L18.5 7H20"
+            /></svg
+          >
+          <p
+            class="text-brandLight/40 uppercase tracking-widest font-black text-sm"
+          >
+            Trenutno pripremamo nove sadržaje
+          </p>
+        </div>
       </div>
     </div>
   </section>
