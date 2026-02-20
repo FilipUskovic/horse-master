@@ -3,10 +3,12 @@ export async function GET() {
 
     // 
     const pages = [
-        '',          // Početna
-        '/about',    // O nama
-        '/gallery',  // Galerija
-        '/contact'   // Kontakt
+        '',          
+        '/about',    
+        '/gallery',  
+        '/contact'  , 
+        '/portfolio',
+        '/usluge'
     ];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>
