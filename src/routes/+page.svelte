@@ -90,8 +90,7 @@
     {#if loaded}
       <div
         in:scale={{ start: 0.95, duration: 1500, easing: quintOut }}
-        class="w-full h-full"
-      >
+        class="w-full h-full">
         <img
           src="/images/Prva.PNG"
           alt="HorseMaster Hero"
