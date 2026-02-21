@@ -212,7 +212,7 @@ import { t } from 'svelte-i18n';
             <a
               href="mailto:petar.uskovic@gmail.com"
               class="mt-0.5 text-brandLight/40 group-hover:text-brandLight transition-colors"
-              >petar.uskovic@gmail.com</a
+              >info@horsemaster.hr</a
             >
           </li>
         </ul>

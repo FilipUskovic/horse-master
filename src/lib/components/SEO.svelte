@@ -26,7 +26,7 @@ import { t, locale } from 'svelte-i18n';
         "@id": siteUrl,
         "url": siteUrl,
         "telephone": "+385 91 135 5169",
-        "email": "petar.uskovic@gmail.com",  
+        "email": "info@horsemaster.hr",  
         "priceRange": "$$",
         "address": {
             "@type": "PostalAddress",
