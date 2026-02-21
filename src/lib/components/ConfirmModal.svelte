@@ -1,12 +1,13 @@
 <script lang="ts">
-    import { fade, scale, fly } from 'svelte/transition';
+    import { fade, scale } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
+    import { t } from 'svelte-i18n';
 
     // Svelte 5 Props (Zadržana tvoja logika)
     let { 
         show = $bindable(false), 
-        title = "Jeste li sigurni?", 
-        message = "Ova radnja se ne može poništiti.", 
+        title = undefined, 
+        message = undefined, 
         onConfirm, 
         onCancel = () => {} 
     } = $props();
@@ -33,7 +34,7 @@
             type="button" 
             class="absolute inset-0 w-full h-full cursor-default bg-transparent border-none outline-none" 
             onclick={handleCancel}
-            aria-label="Zatvori modal"
+            aria-label={$t('modal.close')}
         ></button>
 
         <div 
@@ -47,11 +48,11 @@
             </div>
 
             <h3 class="text-3xl font-black text-brandLight mb-4 uppercase italic tracking-tighter">
-                {title}
+                {title ?? $t('modal.title')}
             </h3>
             
             <p class="text-brandLight/40 text-lg font-light mb-12 leading-relaxed uppercase tracking-widest text-[10px]">
-                {message}
+               {message ?? $t('modal.message')}
             </p>
             
             <div class="flex flex-col gap-4">
@@ -60,7 +61,7 @@
                     onclick={handleConfirm} 
                     class="group relative w-full py-6 bg-red-600 text-white font-black rounded-2xl transition-all hover:scale-[1.02] active:scale-95 uppercase tracking-[0.3em] text-[10px] overflow-hidden shadow-2xl shadow-red-900/20"
                 >
-                    <span class="relative z-10">Potvrđujem</span>
+                    <span class="relative z-10">{$t('modal.confirm')}</span>
                     <div class="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
                 </button>
 
@@ -69,7 +70,7 @@
                     onclick={handleCancel} 
                     class="w-full py-6 bg-white/5 text-brandLight/60 font-black rounded-2xl hover:bg-white/10 hover:text-brandLight transition-all uppercase tracking-[0.3em] text-[10px] border border-white/5"
                 >
-                    Odustani
+                    {$t('modal.cancel')}
                 </button>
             </div>
         </div>

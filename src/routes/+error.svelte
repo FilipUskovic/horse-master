@@ -2,10 +2,11 @@
     import { goto } from '$app/navigation';
     import { fade, fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
+    import { t } from 'svelte-i18n';
 </script>
 
 <svelte:head>
-    <title>404 | Stranica nije pronađena</title>
+    <title>{$t('error_page.seo_title')}</title>
 </svelte:head>
 
 <div class="fixed inset-0 pointer-events-none z-0">
@@ -19,7 +20,9 @@
     
     <div class="text-center max-w-4xl w-full">
         <div class="overflow-hidden mb-4">
-            <span in:fly={{ y: 20, duration: 800, easing: quintOut }} class="block text-brandBlue font-mono text-[10px] md:text-xs uppercase tracking-[0.6em]">Error Code</span>
+            <span in:fly={{ y: 20, duration: 800, easing: quintOut }} class="block text-brandBlue font-mono text-[10px] md:text-xs uppercase tracking-[0.6em]">
+                {$t('error_page.tag')}
+            </span>
         </div>
 
         <h1 in:fly={{ y: 50, duration: 1000, easing: quintOut }} class="text-[25vw] md:text-[15vw] font-black leading-none tracking-tighter uppercase italic">
@@ -28,10 +31,10 @@
 
         <div in:fade={{ delay: 400, duration: 1000 }} class="mt-8 space-y-6">
             <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight italic">
-                Izgubljeni u <span class="text-brandBlue">galopu?</span>
+                {$t('error_page.title_1')} <span class="text-brandBlue">{$t('error_page.title_2')}</span>
             </h2>
             <p class="text-brandLight/40 text-sm md:text-lg max-w-md mx-auto font-light leading-relaxed">
-                Nažalost, stranica koju tražite ne postoji ili je premještena na drugu lokaciju.
+                {$t('error_page.desc')}
             </p>
         </div>
 
@@ -39,9 +42,9 @@
             <button 
                 onclick={() => goto('/')}
                 class="group relative inline-flex items-center gap-6 px-12 py-6 bg-brandLight text-brandDark rounded-full font-black uppercase tracking-[0.4em] text-[10px] overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl"
-                aria-label="Povratak na početnu stranicu"
+                aria-label={$t('error_page.btn_home')}
             >
-                <span class="relative z-10">Povratak na početnu</span>
+                <span class="relative z-10">{$t('error_page.btn_home')}</span>
                 <div class="absolute inset-0 bg-brandBlue translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
             </button>
         </div>
@@ -49,7 +52,7 @@
 </div>
 
 <style>
-    /*  Typography */
+    /* Typography */
     .text-stroke-white {
         -webkit-text-stroke: 1px rgba(240, 242, 245, 0.2);
         color: transparent;

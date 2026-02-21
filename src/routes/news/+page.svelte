@@ -3,13 +3,16 @@
     import { quintOut } from 'svelte/easing';
     import SEO from '$lib/components/SEO.svelte';
     import type { PageData } from './$types';
+    import { t, locale } from 'svelte-i18n'; 
 
     let { data }: { data: PageData } = $props();
 
     interface NewsPost {
         id: string;
         title: string;
+        title_en?: string;
         content: string;
+        content_en?: string;
         image_url: string | null;
         created_at: string;
     }
@@ -18,6 +21,17 @@
 
     const openNews = (post: NewsPost) => (selectedNews = post);
     const closeNews = () => (selectedNews = null);
+
+    // Helper funkcije za  pravog jezika iz baze
+    function getTitle(post: NewsPost) {
+        if ($locale === 'en' && post.title_en) return post.title_en;
+        return post.title;
+    }
+
+    function getContent(post: NewsPost) {
+        if ($locale === 'en' && post.content_en) return post.content_en;
+        return post.content;
+    }
 
     function reveal(node: HTMLElement, delay = 0) {
         const observer = new IntersectionObserver((entries) => {
@@ -41,16 +55,18 @@
     <div class="max-w-[1400px] mx-auto px-6">
         
         <div class="mb-20 text-center reveal-init" use:reveal>
-            <span class="text-brandBlue font-mono text-xs uppercase tracking-[0.5em] block mb-4">Arhiva</span>
+            <span class="text-brandBlue font-mono text-xs uppercase tracking-[0.5em] block mb-4">
+                {$t('news_page.tag')}
+            </span>
             <h1 class="text-5xl md:text-8xl font-black uppercase tracking-tighter italic leading-none">
-                Sve <span class="text-transparent text-stroke-white">Novosti</span>
+                {$t('news_page.title_1')} <span class="text-transparent text-stroke-white">{$t('news_page.title_2')}</span>
             </h1>
         </div>
 
         {#if data.news.length > 0}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {#each data.news as post, i}
-                    <button type="button" class="reveal-init w-full text-left bg-white/5 rounded-[2.5rem] overflow-hidden border border-white/5 group hover:border-brandBlue/30 hover:-translate-y-2 active:scale-95 transition-all duration-700 cursor-pointer flex flex-col will-change-transform" use:reveal={i * 50} onclick={() => openNews(post)} aria-label={`Otvori vijest: ${post.title}`}>
+                    <button type="button" class="reveal-init w-full text-left bg-white/5 rounded-[2.5rem] overflow-hidden border border-white/5 group hover:border-brandBlue/30 hover:-translate-y-2 active:scale-95 transition-all duration-700 cursor-pointer flex flex-col will-change-transform" use:reveal={i * 50} onclick={() => openNews(post)} aria-label={`Otvori vijest: ${getTitle(post)}`}>
                         {#if post.image_url}
                             <div class="h-64 w-full overflow-hidden">
                                 <img src={post.image_url} alt="" loading="lazy" decoding="async" class="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-1000" />
@@ -58,8 +74,15 @@
                         {/if}
                         <div class="p-10 flex-grow flex flex-col">
                             <span class="block text-[10px] font-black text-brandBlue uppercase tracking-widest mb-4">{new Date(post.created_at).toLocaleDateString("hr-HR")}</span>
-                            <h3 class="text-xl font-black uppercase leading-tight text-brandLight mb-6 line-clamp-2">{post.title}</h3>
-                            <div class="mt-auto flex items-center text-[10px] font-black uppercase tracking-widest text-brandLight/30 group-hover:text-brandBlue transition-colors"><span>Pročitaj sve</span><svg class="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
+                            
+                            <h3 class="text-xl font-black uppercase leading-tight text-brandLight mb-6 line-clamp-2">
+                                {getTitle(post)}
+                            </h3>
+                            
+                            <div class="mt-auto flex items-center text-[10px] font-black uppercase tracking-widest text-brandLight/30 group-hover:text-brandBlue transition-colors">
+                                <span>{$t('news_page.read_more')}</span>
+                                <svg class="w-4 h-4 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </div>
                         </div>
                     </button>
                 {/each}
@@ -67,7 +90,9 @@
         {:else}
             <div class="py-32 flex flex-col items-center justify-center border border-white/5 rounded-[3rem] bg-brandDeep/10 reveal-init" use:reveal>
                 <svg class="w-12 h-12 text-brandLight/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5L18.5 7H20"/></svg>
-                <p class="text-brandLight/40 uppercase tracking-widest font-black text-sm">Arhiva je trenutno prazna</p>
+                <p class="text-brandLight/40 uppercase tracking-widest font-black text-sm">
+                    {$t('news_page.empty')}
+                </p>
             </div>
         {/if}
     </div>
@@ -87,9 +112,15 @@
                 </div>
             {/if}
             <div class="p-10 md:p-16 relative z-10">
-                <span class="text-brandBlue font-black text-[10px] uppercase tracking-[0.5em] block mb-6">Novosti</span>
-                <h2 class="text-4xl md:text-6xl font-black text-white mb-10 leading-none uppercase italic">{selectedNews.title}</h2>
-                <div class="prose prose-invert prose-xl text-brandLight/60 max-w-none">{@html selectedNews.content}</div>
+                <span class="text-brandBlue font-black text-[10px] uppercase tracking-[0.5em] block mb-6">
+                    {$t('news_page.modal_tag')}
+                </span>
+                <h2 class="text-4xl md:text-6xl font-black text-white mb-10 leading-none uppercase italic">
+                    {getTitle(selectedNews)}
+                </h2>
+                <div class="prose prose-invert prose-xl text-brandLight/60 max-w-none">
+                    {@html getContent(selectedNews)}
+                </div>
             </div>
         </div>
     </div>

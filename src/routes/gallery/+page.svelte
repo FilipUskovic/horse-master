@@ -3,53 +3,45 @@
   import { quintOut } from "svelte/easing";
   import SEO from "$lib/components/SEO.svelte";
   import type { PageData } from "./$types";
+  import { t, locale } from "svelte-i18n"; 
 
   let { data }: { data: PageData } = $props();
 
   interface GalleryImage {
     image_url: string;
     title: string;
+    title_en?: string;
     size?: "large" | "tall" | "normal";
+    display_order?: number; 
   }
 
   let localImages: GalleryImage[] = [
-    {
-      image_url: "/images/image00001.jpeg",
-      title: "Snimanje 1",
-      size: "large",
-    },
-    { image_url: "/images/image00003.jpeg", title: "Naš tim", size: "normal" },
-    {
-      image_url: "/images/image00005.jpeg",
-      title: "Veličanstveni konj",
-      size: "tall",
-    },
-    {
-      image_url: "/images/image00006.jpeg",
-      title: "Trenutak u galopu",
-      size: "normal",
-    },
-    {
-      image_url: "/images/image00007.jpeg",
-      title: "Transport Prestige",
-      size: "normal",
-    },
-    {
-      image_url: "/images/image00008.jpeg",
-      title: "Zadovoljni Klijenti",
-      size: "tall",
-    },
+    { image_url: "/images/image00001.jpeg", title: "Snimanje 1", title_en: "Shooting 1", size: "large" },
+    { image_url: "/images/image00003.jpeg", title: "Naš tim", title_en: "Our Team", size: "normal" },
+    { image_url: "/images/image00005.jpeg", title: "Veličanstveni konj", title_en: "Majestic Horse", size: "tall" },
+    { image_url: "/images/image00006.jpeg", title: "Trenutak u galopu", title_en: "Gallop Moment", size: "normal" },
+    { image_url: "/images/image00007.jpeg", title: "Transport Prestige", title_en: "Prestige Transport", size: "normal" },
+    { image_url: "/images/image00008.jpeg", title: "Zadovoljni Klijenti", title_en: "Satisfied Clients", size: "tall" }
   ];
 
-  // Pratimo indeks slike umjesto samog URL-a
+  // follow index from picss 
   let selectedIndex = $state<number | null>(null);
 
-  let allImages = $derived([...localImages, ...(data.supabasePhotos || [])]);
+    let allImages = $derived([
+      ...localImages, 
+      ...((data.supabasePhotos as GalleryImage[]) || [])
+  ]);
 
-  //  trenutna sliku na temelju indeksa
   let currentImage = $derived(
     selectedIndex !== null ? allImages[selectedIndex] : null,
   );
+
+  function getDisplayTitle(img: GalleryImage) {
+      if ($locale === 'en' && img.title_en) {
+          return img.title_en;
+      }
+      return img.title || 'Untitled';
+  }
 
   // open pics has num
   const openImage = (index: number) => (selectedIndex = index);
@@ -85,17 +77,17 @@
 
   // za mobitel swape
   let touchStartX = 0;
-    let touchEndX = 0;
+  let touchEndX = 0;
 
-    const handleSwipe = () => {
-        const swipeThreshold = 50; // Minimalna duljina poteza u pikselima da se registrira
-        if (touchEndX < touchStartX - swipeThreshold) nextImage(); // Potez ulijevo
-        if (touchEndX > touchStartX + swipeThreshold) prevImage(); // Potez udesno
-    };
+  const handleSwipe = () => {
+      const swipeThreshold = 50; 
+      if (touchEndX < touchStartX - swipeThreshold) nextImage(); 
+      if (touchEndX > touchStartX + swipeThreshold) prevImage(); 
+  };
 </script>
 
 <SEO
-  title="Galerija - Foto Reportaža | HorseMaster Prestige"
+  title="{$t('nav.gallery')} | HorseMaster Prestige"
   description="Pogledajte ekskluzivne trenutke s naših snimanja, evenata i transporta."
 />
 
@@ -142,17 +134,17 @@
             in:fly={{ y: 80, duration: 1000, easing: quintOut }}
             class="text-[12vw] md:text-[7vw] leading-[0.85] font-black tracking-tighter uppercase mb-4"
           >
-            Foto <br />
+            {$t('gallery_page.title_1')} <br />
             <span
               class="text-brandBlue blue-glow italic lowercase tracking-tight"
-              >Reportaža</span
+              >{$t('gallery_page.title_2')}</span
             >
           </h1>
         </div>
         <p
           class="text-brandLight/30 font-mono text-[10px] uppercase tracking-[0.4em]"
         >
-          Arhiva radova i trenutaka
+          {$t('gallery_page.subtitle')}
         </p>
       </div>
 
@@ -163,8 +155,7 @@
         <p
           class="text-brandLight/40 text-sm italic font-light leading-relaxed border-r border-brandBlue/30 pr-6"
         >
-          "Bilježimo snagu, eleganciju i neizbrisive uspomene kroz objektiv
-          naših suradnika."
+          {$t('gallery_page.quote')}
         </p>
       </div>
     </div>
@@ -182,14 +173,14 @@
             'large'
               ? 'md:col-span-2 md:row-span-2'
               : ''} {img.size === 'tall' ? 'md:row-span-2' : ''}"
-            aria-label="Povećaj sliku: {img.title}"
+            aria-label="Povećaj sliku: {getDisplayTitle(img)}"
           >
             <div
               class="h-full w-full scale-105 transition-transform duration-[1.5s] ease-out group-hover:scale-100 will-change-transform"
             >
               <img
                 src={img.image_url}
-                alt={img.title}
+                alt={getDisplayTitle(img)}
                 loading={i < 4 ? "eager" : "lazy"}
                 decoding="async"
                 class="h-full w-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700 will-change-[opacity]"
@@ -205,7 +196,7 @@
               <h3
                 class="text-brandLight text-xl font-black uppercase tracking-tight italic"
               >
-                {img.title}
+                {getDisplayTitle(img)}
               </h3>
             </div>
           </button>
@@ -229,7 +220,7 @@
           <p
             class="text-brandLight/40 uppercase tracking-widest font-black text-sm"
           >
-            Arhiva je trenutno prazna
+            {$t('gallery_page.empty')}
           </p>
         </div>
       {/if}
@@ -258,7 +249,7 @@
       {#key currentImage.image_url}
         <img
           src={currentImage.image_url}
-          alt={currentImage.title}
+          alt={getDisplayTitle(currentImage)}
           class="max-w-full max-h-full object-contain rounded-xl shadow-[0_0_100px_rgba(37,99,235,0.15)] pointer-events-auto"
           in:scale={{ duration: 400, start: 0.95, easing: quintOut }}
         />
@@ -269,12 +260,13 @@
       >
         <span
           class="text-brandLight/40 font-mono text-[10px] tracking-widest uppercase"
-          >{currentImage.title} &mdash; {(selectedIndex! + 1)
+        >
+          {getDisplayTitle(currentImage)} &mdash; {(selectedIndex! + 1)
             .toString()
             .padStart(2, "0")} / {allImages.length
             .toString()
-            .padStart(2, "0")}</span
-        >
+            .padStart(2, "0")}
+        </span>
       </div>
 
       <button
@@ -283,18 +275,7 @@
         class="absolute left-0 md:-left-12 top-1/2 -translate-y-1/2 text-brandLight/20 hover:text-brandBlue transition-all pointer-events-auto p-4 md:p-8 active:scale-90"
         aria-label="Prethodna slika"
       >
-        <svg
-          class="w-10 h-10 md:w-16 md:h-16"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M15 19l-7-7 7-7"
-          /></svg
-        >
+        <svg class="w-10 h-10 md:w-16 md:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" /></svg>
       </button>
 
       <button
@@ -303,18 +284,7 @@
         class="absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 text-brandLight/20 hover:text-brandBlue transition-all pointer-events-auto p-4 md:p-8 active:scale-90"
         aria-label="Sljedeća slika"
       >
-        <svg
-          class="w-10 h-10 md:w-16 md:h-16"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M9 5l7 7-7 7"
-          /></svg
-        >
+        <svg class="w-10 h-10 md:w-16 md:h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" /></svg>
       </button>
 
       <button
@@ -323,18 +293,7 @@
         class="absolute -top-6 -right-6 md:-top-16 md:-right-16 text-brandLight/40 hover:text-brandBlue transition-all pointer-events-auto p-4 active:scale-90"
         aria-label="Zatvori prozor"
       >
-        <svg
-          class="w-10 h-10 md:w-12 md:h-12"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.2"
-            d="M6 18L18 6M6 6l12 12"
-          /></svg
-        >
+        <svg class="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </div>
   </div>

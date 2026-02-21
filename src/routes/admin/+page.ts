@@ -15,14 +15,19 @@ export const load = async () => {
     // fetch pics from gallery
     const { data: photos, error: photosError } = await supabase
         .from("gallery")
-        .select("*")
+        // new selct for "2jezcini"
+        .select("id, image_url, title, title_en, description, description_en, display_order, created_at")
         .order("created_at", { ascending: false });
 
     // fetch news 
     const { data: newsPosts, error: newsError } = await supabase
         .from("updates")
-        .select("*")
+        .select("id, title, content, title_en, content_en, image_url, created_at")
         .order("created_at", { ascending: false });
+
+        if (photosError || newsError) {
+        console.error("Supabase Error:", photosError || newsError);
+    }
 
     return {
         session,

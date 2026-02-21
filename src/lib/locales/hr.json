@@ -1,0 +1,221 @@
+{
+  "hero": {
+    "subtitle": "Est. 2014 — Prestige",
+    "btn_collab": "Započnimo suradnju",
+    "btn_gallery": "Galerija Radova"
+  },
+  "nav": {
+    "start": "Početna",
+    "about": "O nama",
+    "portfolio": "Portfolio",
+    "gallery": "Galerija",
+    "contact": "Kontakt"
+  },
+  "modal": {
+    "title": "Jeste li sigurni?",
+    "message": "Ova radnja se ne može poništiti.",
+    "close": "Zatvori modal",
+    "confirm": "Potvrđujem",
+    "cancel": "Odustani"
+  },
+  "cookies": {
+    "title": "Privatnost i iskustvo",
+    "message": "Koristimo osnovne kolačiće kako bismo osigurali vrhunsku funkcionalnost i prestižni doživljaj naše platforme.",
+    "aria_accept": "Prihvati kolačiće",
+    "btn_accept": "Prihvaćam"
+  },
+  "footer": {
+    "description": "Profesionalna briga i transport konja. Više od desetljeća tradicije u filmskoj produkciji, eventima i sigurnom transportu.",
+    "nav_title": "Navigacija",
+    "contact_title": "Kontakt",
+    "location": "Samobor, Hrvatska",
+    "rights": "Sva prava pridržana.",
+    "admin": "Admin Pristup",
+    "scroll_top": "Povratak na vrh"
+  },
+
+  "editor": {
+    "bold": "Podebljano",
+    "italic": "Kurziv",
+    "strike": "Precrtano",
+    "h2": "Naslov 2",
+    "h3": "Naslov 3",
+    "list": "Lista",
+    "ordered_list": "Numerirana lista",
+    "placeholder": "Napišite nešto..."
+  },
+  "seo": {
+    "default_title": "Vrhunska škola jahanja i briga o konjima",
+    "default_description": "Horse Master nudi vrhunsku školu jahanja, profesionalnu brigu i siguran transport konja uz desetljeće tradicije.",
+    "keywords": "konji, jahanje, škola jahanja, horse riding, štala, konjički klub, transport konja, Samobor"
+  },
+  "toast": {
+    "close": "Zatvori obavijest",
+    "saved": "Promjene su uspješno spremljene!",
+    "error": "Došlo je do pogreške. Pokušajte ponovno.",
+    "uploading": "Slanje datoteke...",
+    "gallery_saved": "Slika je uspješno dodana u galeriju!",
+    "gallery_deleted": "Slika je trajno uklonjena iz galerije.",
+    "news_saved": "Nova obavijest je uspješno objavljena!",
+    "news_updated": "Promjene na obavijesti su spremljene!",
+    "news_deleted": "Obavijest je uspješno obrisana iz arhive.",
+    "required": "Molimo popunite sva obavezna polja!",
+    "error_baza": "Došlo je do pogreške u komunikaciji s bazom."
+   
+  },
+  "errors": {
+    "compression_failed": "Kompresija slike nije uspjela.",
+    "file_read_error": "Greška pri čitanju datoteke."
+  },
+  "about": {
+    "seo_title": "O nama",
+    "seo_desc": "Definicija izvrsnosti u radu s konjima.",
+    "est": "Est. 2014 — Zagreb",
+    "hero_1": "Horse",
+    "hero_2": "Master",
+    "intro_main": "Tvrtka HorseMaster već se više od desetljeća bavi aktivnostima vezanima uz konje.",
+    "intro_highlight": "Ove plemenite životinje naša su ljubav i poziv.",
+    "intro_sub": "Tu smo da ih prilagodimo svim vašim potrebama i idejama. Velik broj uspješno realiziranih projekata i povjerenje zadovoljnih klijenata.",
+    "prod_tag": "Za Ekrane",
+    "prod_title": "Produkcija\n& Film",
+    "prod_desc": "Ako su vam konji potrebni za reklame, spotove ili filmove — mi smo tu za vas. Naši konji su istrenirani za set.",
+    "event_tag": "Specijalne Prigode",
+    "event_title": "Eventi & \nUspomene",
+    "wedding_title": "Vjenčanja",
+    "wedding_desc": "Želite imati neizbrisive uspomene i photosession s vjenčanja uz konje? Elegancija bez premca.",
+    "photo_title": "Photosession",
+    "photo_desc": "Bilo da se radi o privatnim sessionima ili modnim editorijalima, mi smo tu za vas.",
+    "event_footer": "Prilagođavamo se vašim potrebama.",
+    "cta_tag": "Budite dio naše priče",
+    "cta_title": "Budite na \nKonju.",
+    "cta_btn": "Započnimo Suradnju"
+  },
+  "admin": {
+    "nav_site": "Sajt",
+    "nav_logout": "Odjava",
+    "gallery_new": "Nova Slika",
+    "gallery_active": "Aktivna Galerija",
+    "news_new": "Nova Obavijest",
+    "news_edit": "Uredi Obavijest",
+    "news_archive": "Arhiva",
+    "label_title_hr": "Naslov (HR)",
+    "label_title_en": "Title (EN)",
+    "label_desc_hr": "Opis (HR)",
+    "label_desc_en": "Description (EN)",
+    "label_content_hr": "Sadržaj (HR)",
+    "label_content_en": "Content (EN)",
+    "btn_publish": "Objavi",
+    "btn_save": "Spremi",
+    "confirm_delete": "Obriši?",
+    "label_photo_req": "Fotografija (Obavezno)",
+    "label_photo_opt": "Fotografija (Opcionalno)",
+    "btn_edit": "Uredi",
+    "btn_delete": "Obriši"
+  },
+  "contact": {
+    "page_title": "Kontakt",
+    "header_tag": "Upit",
+    "header_title": "Budite na",
+    "header_highlight": "Konju.",
+    "label_name": "Ime i Prezime",
+    "label_email": "Email Adresa",
+    "label_message": "Detalji Upita",
+    "btn_send": "Pošalji Upit",
+    "btn_sending": "Slanje...",
+    "success_title": "Poslano!",
+    "success_msg": "Hvala vam, {name}. <br> Javit ćemo se u najkraćem roku.",
+    "btn_back": "Povratak na početnu",
+    "btn_new": "Pošalji novi upit umjesto toga",
+    "aria_close": "Odustani i vrati se na početnu"
+  },
+  "errors_form": {
+    "name_short": "Ime mora imati barem 2 slova.",
+    "email_invalid": "Unesite valjanu email adresu.",
+    "msg_short": "Poruka je prekratka.",
+    "form_invalid": "Molimo ispravite označena polja.",
+    "network_error": "Mrežna greška. Provjerite vezu."
+  },
+  "gallery_page": {
+    "title_1": "Foto",
+    "title_2": "Reportaža",
+    "subtitle": "Arhiva radova i trenutaka",
+    "quote": "\"Bilježimo snagu, eleganciju i neizbrisive uspomene kroz objektiv naših suradnika.\"",
+    "empty": "Arhiva je trenutno prazna"
+  },
+  "login": {
+    "page_title": "Prijava | Admin",
+    "role": "Admin",
+    "label_email": "Identitet",
+    "placeholder_email": "vaš@email.com",
+    "label_pass": "Lozinka",
+    "placeholder_pass": "••••••••",
+    "btn_hide_pass": "Sakrij lozinku",
+    "btn_show_pass": "Prikaži lozinku",
+    "btn_submit": "Pristupi panelu",
+    "btn_loading": "Autorizacija...",
+    "btn_home": "Početna",
+    "err_invalid": "Pogrešan email ili lozinka.",
+    "err_limit": "Previše pokušaja. Pričekajte malo.",
+    "err_default": "Došlo je do greške. Pokušajte ponovno.",
+    "err_system": "Neočekivana greška sustava."
+  },
+  "news_page": {
+    "tag": "Arhiva",
+    "title_1": "Sve",
+    "title_2": "Novosti",
+    "read_more": "Pročitaj sve",
+    "empty": "Arhiva je trenutno prazna",
+    "modal_tag": "Novosti"
+  },
+  "portfolio": {
+    "seo_title": "Portfolio",
+    "seo_desc": "Reference i projekti Horse Master Prestige tima.",
+    "tag": "Odabrani Radovi",
+    "title_main": "Port",
+    "title_highlight": "folio",
+    "cursor_view": "Vidi",
+    "cta_title": "Postanite dio",
+    "cta_highlight": "Prestiža.",
+    "cta_btn": "Zatražite Suradnju"
+},
+  "services_page": {
+    "seo_title": "Naše Usluge",
+    "seo_desc": "Detaljan pregled naših usluga s konjima. Konji za film, spotove, vjenčanja i prijevoz.",
+    "expertise_tag": "Ekspertiza",
+    "btn_request": "Zatražite ovu uslugu",
+    "cta_title": "Spremni za",
+    "cta_highlight": "Suradnju?",
+    "cta_btn": "Kontaktirajte nas",
+    "aria_back": "Povratak na početnu"
+  },
+  "error_page": {
+    "seo_title": "404 | Stranica nije pronađena",
+    "tag": "Error Code",
+    "title_1": "Izgubljeni u",
+    "title_2": "galopu?",
+    "desc": "Nažalost, stranica koju tražite ne postoji ili je premještena na drugu lokaciju.",
+    "btn_home": "Povratak na početnu"
+  },
+  "home": {
+    "seo_title": "Početna | Horse Master - Transport Konja",
+    "seo_desc": "Najsigurniji i najpouzdaniji transport konja u regiji. Udobnost i sigurnost vaših šampiona na prvom mjestu.",
+    "hero_btn_collab": "Započnimo suradnju",
+    "hero_btn_gallery": "Galerija Radova",
+    "hero_est": "Est. 2014 — Prestige",
+    "stats_years": "Godina",
+    "stats_partner": "Partner",
+    "stats_security": "Sigurnost",
+    "stats_reference": "Referenca",
+    "services_tag": "Ekspertiza",
+    "services_title_1": "Naše",
+    "services_title_2": "Usluge",
+    "services_more": "Detaljnije",
+    "news_tag": "Aktualno",
+    "news_archive": "Arhiva",
+    "news_title_empty_1": "Novosti iz",
+    "news_title_empty_2": "Prestigea",
+    "news_empty_desc": "Trenutno pripremamo nove sadržaje",
+    "news_more": "Detaljnije",
+    "news_modal_tag": "Novosti"
+  }
+}

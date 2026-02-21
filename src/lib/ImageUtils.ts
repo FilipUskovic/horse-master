@@ -1,3 +1,6 @@
+import { get } from 'svelte/store';
+import { t } from 'svelte-i18n';
+
 export async function compressImage(file: File, maxWidth = 1920, quality = 0.8): Promise<Blob> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -26,13 +29,15 @@ export async function compressImage(file: File, maxWidth = 1920, quality = 0.8):
                 canvas.toBlob(
                     (blob) => {
                         if (blob) resolve(blob);
-                        else reject(new Error('Kompresija nije uspjela.'));
+                        else reject(new Error(get(t)('errors.compression_failed')));
                     },
                     'image/jpeg',
                     quality
                 );
             };
         };
-        reader.onerror = (error) => reject(error);
+        reader.onerror = () => {
+            reject(new Error(get(t)('errors.file_read_error')));
+        };
     });
 }

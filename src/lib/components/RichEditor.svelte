@@ -2,8 +2,8 @@
     import { onMount, onDestroy } from 'svelte';
     import { Editor } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
+    import {t} from 'svelte-i18n';
 
-    // Svelte 5 Props - Zadržano bindable
     let { value = $bindable('') } = $props();
 
     let element = $state<HTMLElement>();
@@ -48,15 +48,18 @@
             : 'hover:bg-white/10 text-white/40';
 </script>
 
-<div class="border border-white/5 rounded-[2rem] bg-brandDeep/10 overflow-hidden focus-within:border-brandBlue/50 transition-all duration-500 shadow-2xl">
+
+<div 
+style="--placeholder-text: '{$t('editor.placeholder')}';"
+class="border border-white/5 rounded-[2rem] bg-brandDeep/10 overflow-hidden focus-within:border-brandBlue/50 transition-all duration-500 shadow-2xl">
     {#if editor}
     <div class="flex flex-wrap gap-1.5 p-3 border-b border-white/5 bg-white/[0.02] backdrop-blur-md">
         <button 
             type="button"
             onclick={() => editor?.chain().focus().toggleBold().run()} 
             class="w-10 h-10 rounded-xl transition-all flex items-center justify-center font-black {isActive('bold')}"
-            aria-label="Podebljano"
-            title="Podebljano"
+            aria-label={$t('editor.bold')}
+            title={$t('editor.bold')}
         >
             B
         </button>
@@ -64,8 +67,8 @@
             type="button"
             onclick={() => editor?.chain().focus().toggleItalic().run()} 
             class="w-10 h-10 rounded-xl transition-all flex items-center justify-center italic font-serif {isActive('italic')}"
-            aria-label="Kurziv"
-            title="Kurziv"
+            aria-label={$t('editor.italic')}
+            title={$t('editor.italic')}
         >
             I
         </button>
@@ -73,8 +76,8 @@
             type="button"
             onclick={() => editor?.chain().focus().toggleStrike().run()} 
             class="w-10 h-10 rounded-xl transition-all flex items-center justify-center line-through {isActive('strike')}"
-            aria-label="Precrtano"
-            title="Precrtano"
+            aria-label={$t('editor.strike')}
+            title={$t('editor.strike')}
         >
             S
         </button>
@@ -85,8 +88,8 @@
             type="button"
             onclick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} 
             class="px-3 h-10 rounded-xl transition-all flex items-center justify-center text-xs font-black uppercase tracking-tighter {isActive('heading', { level: 2 })}"
-            aria-label="Naslov 2"
-            title="Naslov 2"
+            aria-label={$t('editor.h2')}
+            title={$t('editor.h2')}
         >
             H2
         </button>
@@ -94,8 +97,8 @@
             type="button"
             onclick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} 
             class="px-3 h-10 rounded-xl transition-all flex items-center justify-center text-xs font-black uppercase tracking-tighter {isActive('heading', { level: 3 })}"
-            aria-label="Naslov 3"
-            title="Naslov 3"
+            aria-label={$t('editor.h3')}
+            title={$t('editor.h3')}
         >
             H3
         </button>
@@ -106,19 +109,19 @@
             type="button"
             onclick={() => editor?.chain().focus().toggleBulletList().run()} 
             class="px-3 h-10 rounded-xl transition-all flex items-center justify-center text-[10px] font-black uppercase tracking-widest {isActive('bulletList')}"
-            aria-label="Lista s grafičkim oznakama"
-            title="Lista"
+            aria-label={$t('editor.list')}
+            title={$t('editor.list')}
         >
-            • Lista
+            • {$t('editor.list')}
         </button>
         <button 
             type="button"
             onclick={() => editor?.chain().focus().toggleOrderedList().run()} 
             class="px-3 h-10 rounded-xl transition-all flex items-center justify-center text-[10px] font-black uppercase tracking-widest {isActive('orderedList')}"
-            aria-label="Numerirana lista"
-            title="Numerirana lista"
+            aria-label={$t('editor.ordered_list')}
+            title={$t('editor.ordered_list')}
         >
-            1. Lista
+           1. {$t('editor.list')}
         </button>
     </div>
     {/if}

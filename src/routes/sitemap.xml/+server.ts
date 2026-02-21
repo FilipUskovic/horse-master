@@ -1,5 +1,5 @@
 export async function GET() {
-    const site = 'https://horse-master.vercel.app'; 
+    const site = 'https://horsemaster.hr'; 
 
     // 
     const pages = [

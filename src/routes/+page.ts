@@ -2,20 +2,19 @@ import { supabase } from '$lib/supabase';
 import type { PageLoad } from './$types';
 // SEO optimization to get better visibility on google
 export const load: PageLoad = async () => {
-    // last 3 
+    // last 3
     const { data: news, error } = await supabase
         .from('updates') 
-        .select('*')
+        .select('id, title, title_en, content, content_en, image_url, created_at')
         .order('created_at', { ascending: false })
         .limit(3);
 
-    // if is erros show empty 
     if (error) {
         console.error("Greška pri dohvaćanju novosti:", error.message);
     }
 
     return {
-        news: news || [],
+        news: news ?? [],
         seo: {
             title: "Početna | Horse Master - Transport Konja",
             description: "Najsigurniji i najpouzdaniji transport konja u regiji. Udobnost i sigurnost vaših šampiona na prvom mjestu."

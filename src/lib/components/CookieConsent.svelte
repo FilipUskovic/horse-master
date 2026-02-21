@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { fade, fly } from "svelte/transition";
+    import {fly } from "svelte/transition";
     import { quintOut } from "svelte/easing";
+    import { t } from 'svelte-i18n';
 
     let show = $state(false);
 
@@ -33,9 +34,9 @@
                     </div>
                     
                     <div class="text-center md:text-left">
-                        <h3 class="text-brandLight font-black uppercase tracking-[0.3em] text-[10px] mb-2 italic">Privatnost i iskustvo</h3>
+                        <h3 class="text-brandLight font-black uppercase tracking-[0.3em] text-[10px] mb-2 italic">{$t('cookies.title')}</h3>
                         <p class="text-brandLight/40 text-xs md:text-sm leading-relaxed max-w-2xl font-light uppercase tracking-widest">
-                            Koristimo osnovne kolačiće kako bismo osigurali vrhunsku funkcionalnost i prestižni doživljaj naše platforme.
+                        {$t('cookies.message')}
                         </p>
                     </div>
                 </div>
@@ -44,9 +45,9 @@
                     <button 
                         onclick={accept}
                         class="group relative flex-1 md:flex-none px-12 py-5 bg-brandLight text-brandDark font-black rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl"
-                        aria-label="Prihvati kolačiće"
+                        aria-label={$t('cookies.aria_accept')}
                     >
-                        <span class="relative z-10 uppercase tracking-[0.4em] text-[10px]">Prihvaćam</span>
+                        <span class="relative z-10 uppercase tracking-[0.4em] text-[10px]">{$t('cookies.btn_accept')}</span>
                         <div class="absolute inset-0 bg-brandBlue translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
                     </button>
                 </div>

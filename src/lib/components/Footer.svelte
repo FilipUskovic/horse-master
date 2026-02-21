@@ -1,4 +1,6 @@
 <script lang="ts">
+import { t } from 'svelte-i18n';
+
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -30,8 +32,7 @@
         <p
           class="text-xs leading-relaxed max-w-xs font-light uppercase tracking-widest text-brandLight/30"
         >
-          Profesionalna briga i transport konja. Više od desetljeća tradicije u
-          filmskoj produkciji, eventima i sigurnom transportu.
+          {$t('footer.description')}
         </p>
 
         <div class="flex space-x-6 pt-4">
@@ -75,7 +76,7 @@
         <h3
           class="text-brandLight font-black uppercase tracking-[0.4em] mb-8 text-[10px] italic"
         >
-          Navigacija
+         {$t('footer.nav_title')}
         </h3>
         <ul class="space-y-4 text-[10px] font-black uppercase tracking-[0.2em]">
           <li>
@@ -85,7 +86,7 @@
               ><span
                 class="mr-3 text-brandBlue/20 group-hover:text-brandBlue transition-colors"
                 >/</span
-              > Početna</a
+              > {$t('nav.start')}</a
             >
           </li>
           <li>
@@ -95,7 +96,7 @@
               ><span
                 class="mr-3 text-brandBlue/20 group-hover:text-brandBlue transition-colors"
                 >/</span
-              > O nama</a
+              > {$t('nav.about')}</a
             >
           </li>
           <li>
@@ -105,7 +106,7 @@
               ><span
                 class="mr-3 text-brandBlue/20 group-hover:text-brandBlue transition-colors"
                 >/</span
-              > Galerija</a
+              > {$t('nav.gallery')}</a
             >
           </li>
           <li>
@@ -115,7 +116,7 @@
               ><span
                 class="mr-3 text-brandBlue/20 group-hover:text-brandBlue transition-colors"
                 >/</span
-              > Kontakt</a
+              > {$t('nav.contact')}</a
             >
           </li>
         </ul>
@@ -125,7 +126,7 @@
         <h3
           class="text-brandLight font-black uppercase tracking-[0.4em] mb-8 text-[10px] italic"
         >
-          Kontakt
+          {$t('footer.contact_title')}
         </h3>
         <ul class="space-y-5 text-[10px] font-black uppercase tracking-[0.2em]">
           <li class="flex items-start group">
@@ -169,7 +170,7 @@
             <span
               class="mt-2 text-brandLight/40 group-hover:text-brandLight transition-colors"
             >
-              Samobor, Hrvatska
+              {$t('footer.location')}
             </span>
           </li>
           <li class="flex items-center group">
@@ -222,7 +223,7 @@
       class="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center text-[9px] font-black uppercase tracking-[0.3em] text-brandLight/20"
     >
       <p class="italic">
-        &copy; {currentYear} HorseMaster Prestige. All Rights Reserved.
+        &copy; {currentYear} HorseMaster Prestige. {$t('footer.rights')}
       </p>
 
       <div class="flex items-center mt-8 md:mt-0 space-x-8">
@@ -230,13 +231,13 @@
           href="/login"
           class="hover:text-brandBlue transition-colors flex items-center"
         >
-          <span class="mr-2 text-brandBlue">/</span> Admin Access
+          <span class="mr-2 text-brandBlue">/</span> {$t('footer.admin')}
         </a>
 
         <button
           onclick={scrollToTop}
           class="bg-brandBlue text-white p-3 rounded-full transition-all group shadow-2xl hover:scale-110 active:scale-90"
-          aria-label="Povratak na vrh"
+          aria-label={$t('footer.scroll_top')}
         >
           <svg
             class="w-4 h-4 group-hover:-translate-y-1 transition-transform"

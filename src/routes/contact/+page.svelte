@@ -1,8 +1,9 @@
 <script lang="ts">
     import { PUBLIC_WEB3FORMS_ACCESS_KEY } from '$env/static/public';
-    import { fade, scale, slide, fly } from 'svelte/transition';
+    import { fade, slide, fly } from 'svelte/transition';
     import { quintOut } from 'svelte/easing';
-    import { goto } from '$app/navigation'; // <-- Dodano za povratak
+    import { goto } from '$app/navigation';
+    import { t } from 'svelte-i18n';
 
     // Svelte 5 Runes
     let name = $state("");
@@ -26,13 +27,13 @@
         errors = { name: "", email: "", message: "" };
 
         // validations
-        if (name.trim().length < 2) errors.name = "Ime mora imati barem 2 slova.";
-        if (!email.includes('@') || !email.includes('.')) errors.email = "Unesite valjanu email adresu.";
-        if (message.trim().length < 10) errors.message = "Poruka je prekratka.";
+        if (name.trim().length < 2) errors.name = $t('errors_form.name_short');
+        if (!email.includes('@') || !email.includes('.')) errors.email = $t('errors_form.email_invalid');
+        if (message.trim().length < 10) errors.message = $t('errors_form.msg_short');
 
         if (errors.name || errors.email || errors.message) {
             isSubmitting = false;
-            statusMessage = "Molimo ispravite označena polja.";
+            statusMessage = $t('errors_form.form_invalid');
             return;
         }
 
@@ -46,7 +47,7 @@
                     email,
                     message,
                     from_name: "Horse Master Prestige",
-                    subject: `Novi Upit: ${name}`,
+                    subject: `Prestige Inquiry: ${name}`,
                     botcheck: botcheck 
                 })
             });
@@ -58,17 +59,17 @@
                 isSuccess = true;
                 name = ""; email = ""; message = ""; 
             } else {
-                statusMessage = result.message || "Slanje nije uspjelo.";
+                statusMessage = result.message || $t('errors_form.network_error');
             }
         } catch (err) {
-            statusMessage = "Mrežna greška. Provjerite vezu.";
+            statusMessage = $t('errors_form.network_error');
         } finally {
             isSubmitting = false;
         }
     }
 </script>
 
-<svelte:head><title>Kontakt | HorseMaster Prestige</title></svelte:head>
+<svelte:head><title>{$t('contact.page_title')} | HorseMaster Prestige</title></svelte:head>
 
 <div class="fixed inset-0 pointer-events-none z-0">
     <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brandBlue/5 blur-[120px] rounded-full"></div>
@@ -83,7 +84,7 @@
         <button 
             onclick={() => goto('/')} 
             class="absolute top-6 right-6 p-3 bg-white/5 hover:bg-white/10 rounded-full text-brandLight/50 hover:text-white transition-all z-50 focus:outline-none"
-            aria-label="Odustani i vrati se na početnu"
+            aria-label={$t('contact.aria_close')}
         >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
@@ -94,33 +95,33 @@
                     <svg class="h-12 w-12 text-brandBlue blue-glow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
                 </div>
                 
-                <h2 class="text-4xl md:text-5xl font-black text-brandLight tracking-tighter uppercase italic mb-4">Poslano!</h2>
+                <h2 class="text-4xl md:text-5xl font-black text-brandLight tracking-tighter uppercase italic mb-4">{$t('contact.success_title')}</h2>
                 
                 <p class="text-brandLight/60 text-lg font-light mb-10">
-                    Hvala vam, <span class="text-brandLight font-bold">{submittedName}</span>. <br> Javit ćemo se u najkraćem roku.
+                    {@html $t('contact.success_msg', { values: { name: submittedName } })}
                 </p>
                 
                 <button 
                     onclick={() => goto('/')} 
                     class="w-full bg-brandBlue text-white font-black py-5 rounded-2xl overflow-hidden transition-all active:scale-[0.98] shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:bg-blue-500 uppercase tracking-[0.3em] text-[10px]"
                 >
-                    Povratak na početnu
+                    {$t('contact.btn_back')}
                 </button>
 
                 <button 
                     onclick={() => isSuccess = false} 
                     class="mt-8 text-[9px] font-black uppercase tracking-[0.4em] text-brandLight/40 hover:text-brandBlue transition-colors cursor-pointer"
                 >
-                    Pošalji novi upit umjesto toga
+                    {$t('contact.btn_new')}
                 </button>
             </div>
 
         {:else}
             <div class="relative z-10" in:fade>
                 <div class="mb-14">
-                    <span class="text-brandBlue font-mono text-[10px] uppercase tracking-[0.5em] block mb-4">Upit</span>
+                    <span class="text-brandBlue font-mono text-[10px] uppercase tracking-[0.5em] block mb-4">{$t('contact.header_tag')}</span>
                     <h2 class="text-5xl font-black text-brandLight tracking-tighter uppercase italic leading-none">
-                        Budite na <br> <span class="text-transparent text-stroke-white blue-glow">Konju.</span>
+                        {$t('contact.header_title')} <br> <span class="text-transparent text-stroke-white blue-glow">{$t('contact.header_highlight')}</span>
                     </h2>
                 </div>
 
@@ -140,10 +141,10 @@
                             bind:value={name} 
                             required
                             class="peer block py-4 px-0 w-full text-brandLight bg-transparent border-0 border-b border-white/10 focus:outline-none focus:border-brandBlue transition-all placeholder-transparent text-xl md:text-2xl" 
-                            placeholder="Ime" 
+                            placeholder="" 
                         />
                         <label for="contact_name" class="absolute text-brandLight/20 duration-300 transform -translate-y-8 scale-75 top-4 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8 uppercase tracking-[0.3em] text-[10px] font-black peer-focus:text-brandBlue transition-all">
-                            Ime i Prezime
+                            {$t('contact.label_name')}
                         </label>
                         {#if errors.name} 
                             <p transition:slide class="text-[9px] text-red-500 mt-2 font-bold uppercase tracking-wider">{errors.name}</p> 
@@ -157,10 +158,10 @@
                             bind:value={email} 
                             required
                             class="peer block py-4 px-0 w-full text-brandLight bg-transparent border-0 border-b border-white/10 focus:outline-none focus:border-brandBlue transition-all placeholder-transparent text-xl md:text-2xl" 
-                            placeholder="Email" 
+                            placeholder=" " 
                         />
                         <label for="contact_email" class="absolute text-brandLight/20 duration-300 transform -translate-y-8 scale-75 top-4 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8 uppercase tracking-[0.3em] text-[10px] font-black peer-focus:text-brandBlue transition-all">
-                            Email Adresa
+                            {$t('contact.label_email')}
                         </label>
                         {#if errors.email} 
                             <p transition:slide class="text-[9px] text-red-500 mt-2 font-bold uppercase tracking-wider">{errors.email}</p> 
@@ -174,10 +175,10 @@
                             bind:value={message} 
                             required
                             class="peer block py-4 px-0 w-full text-brandLight bg-transparent border-0 border-b border-white/10 focus:outline-none focus:border-brandBlue transition-all placeholder-transparent text-xl md:text-2xl resize-none" 
-                            placeholder="Poruka"
+                            placeholder=" "
                         ></textarea>
                         <label for="contact_message" class="absolute text-brandLight/20 duration-300 transform -translate-y-8 scale-75 top-4 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8 uppercase tracking-[0.3em] text-[10px] font-black peer-focus:text-brandBlue transition-all">
-                            Detalji Upita
+                           {$t('contact.label_message')}
                         </label>
                         {#if errors.message} 
                             <p transition:slide class="text-[9px] text-red-500 mt-2 font-bold uppercase tracking-wider">{errors.message}</p> 
@@ -190,7 +191,7 @@
                         class="group relative w-full bg-brandLight text-brandDark font-black py-6 rounded-2xl overflow-hidden transition-all active:scale-[0.98] disabled:opacity-50"
                     >
                         <span class="relative z-10 uppercase tracking-[0.4em] text-[10px] group-hover:text-white transition-colors duration-500">
-                            {isSubmitting ? 'Slanje...' : 'Pošalji Upit'}
+                            {isSubmitting ? $t('contact.btn_sending') : $t('contact.btn_send')}
                         </span>
                         <div class="absolute inset-0 bg-brandBlue translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[quintOut]"></div>
                     </button>

@@ -4,6 +4,7 @@
   import { page } from "$app/state";
   import { goto, onNavigate } from "$app/navigation";
   import type { Session } from "@supabase/supabase-js";
+  import {locale, t} from 'svelte-i18n';
 
   let session = $state<Session | null>(null);
   let isLoggingOut = $state(false);
@@ -42,6 +43,11 @@
 
   const isActive = (path: string) =>
     activePath === path || (path !== "/" && activePath.startsWith(path));
+
+    function toggleLanguage() {
+    $locale = $locale === 'hr' ? 'en' : 'hr';
+  }
+
 </script>
 
 <header class="fixed top-0 sm:top-6 inset-x-0 z-50 flex justify-between items-center px-6 py-4 sm:py-0 pointer-events-none">
@@ -53,13 +59,22 @@
     </a>
 
     <nav class="hidden sm:flex pointer-events-auto items-center space-x-1 bg-brandDark/40 backdrop-blur-xl p-1.5 rounded-full border border-white/5 shadow-2xl">
-        <a href="/about" class="desk-link" class:active={isActive("/about")}>O nama</a>
-        <a href="/portfolio" class="desk-link" class:active={isActive("/portfolio")}>Portfolio</a>
-        <a href="/gallery" class="desk-link" class:active={isActive("/gallery")}>Galerija</a>
-        <a href="/contact" class="desk-link" class:active={isActive("/contact")}>Kontakt</a>
+        <a href="/about" class="desk-link" class:active={isActive("/about")}>{$t('nav.about')}</a>
+        <a href="/portfolio" class="desk-link" class:active={isActive("/portfolio")}>{$t('nav.portfolio')}</a>
+        <a href="/gallery" class="desk-link" class:active={isActive("/gallery")}>{$t('nav.gallery')}</a>
+        <a href="/contact" class="desk-link" class:active={isActive("/contact")}>{$t('nav.contact')}</a>
     </nav>
 
     <div class="pointer-events-auto flex items-center gap-3">
+
+      <button 
+            onclick={toggleLanguage} 
+            class="bg-brandDark/40 backdrop-blur-xl px-4 py-2.5 rounded-full border border-white/5 shadow-lg text-[10px] font-black uppercase tracking-widest text-brandLight hover:text-brandBlue transition-all hover:scale-105 active:scale-95" 
+            aria-label="Promijeni jezik">
+            {$locale}
+        </button>
+
+
         {#if session}
             <div class="flex items-center gap-2 bg-brandDark/40 backdrop-blur-xl p-1 rounded-full border border-white/5 shadow-lg">
                 <a href="/admin" class="text-[10px] font-bold uppercase px-4 text-brandLight/60 hover:text-brandBlue transition-colors" class:active={isActive("/admin")}>Admin</a>
@@ -78,14 +93,14 @@
 <div class="sm:hidden fixed bottom-0 inset-x-0 z-50 px-4 pb-8 pt-2 pointer-events-none">
     <nav class="pointer-events-auto bg-brandDark/80 backdrop-blur-2xl border border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[2.5rem] grid grid-cols-5 items-center h-20">
         
-        <a href="/" class="mob-link" class:active={activePath === "/"} aria-label="Početna">
+        <a href="/" class="mob-link" class:active={activePath === "/"} aria-label={$t('nav.start')}>
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-            <span class="text-[8px] font-black uppercase tracking-widest">Start</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">{$t('nav.start')}</span>
         </a>
 
-        <a href="/about" class="mob-link" class:active={isActive("/about")} aria-label="O nama">
+        <a href="/about" class="mob-link" class:active={isActive("/about")} aria-label={$t('nav.about')}>
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="text-[8px] font-black uppercase tracking-widest">O nama</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">{$t('nav.about')}</span>
         </a>
 
         <div class="flex justify-center relative">
@@ -94,14 +109,14 @@
             </a>
         </div>
 
-        <a href="/portfolio" class="mob-link" class:active={isActive("/portfolio")} aria-label="Radovi">
+        <a href="/portfolio" class="mob-link" class:active={isActive("/portfolio")} aria-label={$t('nav.portfolio')}>
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-            <span class="text-[8px] font-black uppercase tracking-widest">Radovi</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">{$t('nav.portfolio')}</span>
         </a>
 
-        <a href="/contact" class="mob-link" class:active={isActive("/contact")} aria-label="Kontakt">
+        <a href="/contact" class="mob-link" class:active={isActive("/contact")} aria-label={$t('nav.contact')}>
             <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <span class="text-[8px] font-black uppercase tracking-widest">Info</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">{$t('nav.contact')}</span>
         </a>
 
     </nav>

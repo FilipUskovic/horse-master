@@ -4,6 +4,7 @@
     import { quintOut } from 'svelte/easing';
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { t } from 'svelte-i18n';
 
     // Svelte 5 Runes 
     let email = $state("");
@@ -30,25 +31,25 @@
 
             if (error) {
                 if (error.message.includes("Invalid login")) {
-                    errorMessage = "Pogrešan email ili lozinka.";
+                    errorMessage = $t('login.err_invalid');
                 } else if (error.message.includes("Too many requests")) {
-                    errorMessage = "Previše pokušaja. Pričekajte malo.";
+                    errorMessage = $t('login.err_limit');
                 } else {
-                    errorMessage = "Došlo je do greške. Pokušajte ponovno.";
+                    errorMessage = $t('login.err_default');
                 }
                 loading = false;
             } else {
                 await goto('/admin', { replaceState: true });
             }
         } catch (err) {
-            errorMessage = "Neočekivana greška sustava.";
+            errorMessage = $t('login.err_system');
             loading = false;
         }
     }
 </script>
 
 <svelte:head>
-    <title>Prijava | HorseMaster Admin</title>
+    <title>{$t('login.page_title')} | HorseMaster Admin</title>
 </svelte:head>
 
 {#if loaded}
@@ -74,7 +75,9 @@
                 <h1 class="text-3xl font-black text-brandLight tracking-tighter uppercase italic">
                     HORSE<span class="text-brandBlue blue-glow">MASTER</span>
                 </h1>
-                <p class="text-brandLight/20 text-[9px] mt-4 uppercase tracking-[0.4em] font-black border-t border-white/5 pt-4 w-24 mx-auto">Admin</p>
+                <p class="text-brandLight/20 text-[9px] mt-4 uppercase tracking-[0.4em] font-black border-t border-white/5 pt-4 w-24 mx-auto">
+                    {$t('login.role')}
+                </p>
             </div>
         </div>
 
@@ -88,14 +91,16 @@
 
             <form onsubmit={handleLogin} class="space-y-10">
                 <div class="space-y-3 group text-left">
-                    <label for="login_email" class="block text-[10px] font-black text-brandLight/30 uppercase tracking-[0.3em] ml-1 group-focus-within:text-brandBlue transition-colors">Identitet</label>
+                    <label for="login_email" class="block text-[10px] font-black text-brandLight/30 uppercase tracking-[0.3em] ml-1 group-focus-within:text-brandBlue transition-colors">
+                        {$t('login.label_email')}
+                    </label>
                     <div class="relative">
                         <input 
                             id="login_email"
                             type="email" 
                             bind:value={email} 
                             required 
-                            placeholder="vaš@email.com"
+                            placeholder={$t('login.placeholder_email')}
                             class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 text-sm font-medium text-brandLight outline-none focus:border-brandBlue focus:bg-white/[0.08] transition-all duration-300 placeholder:text-white/10"
                         />
                         <svg class="w-5 h-5 text-white/20 absolute left-5 top-1/2 -translate-y-1/2 group-focus-within:text-brandBlue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
@@ -103,14 +108,16 @@
                 </div>
 
                 <div class="space-y-3 group text-left">
-                    <label for="login_pass" class="block text-[10px] font-black text-brandLight/30 uppercase tracking-[0.3em] ml-1 group-focus-within:text-brandBlue transition-colors">Lozinka</label>
+                    <label for="login_pass" class="block text-[10px] font-black text-brandLight/30 uppercase tracking-[0.3em] ml-1 group-focus-within:text-brandBlue transition-colors">
+                        {$t('login.label_pass')}
+                    </label>
                     <div class="relative">
                         <input 
                             id="login_pass"
                             type={showPassword ? "text" : "password"} 
                             bind:value={password} 
                             required 
-                            placeholder="••••••••"
+                            placeholder={$t('login.placeholder_pass')}
                             class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 pl-14 pr-14 text-sm font-medium text-brandLight outline-none focus:border-brandBlue focus:bg-white/[0.08] transition-all duration-300 placeholder:text-white/10"
                         />
                         <svg class="w-5 h-5 text-white/20 absolute left-5 top-1/2 -translate-y-1/2 group-focus-within:text-brandBlue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -119,7 +126,7 @@
                             type="button"
                             onclick={() => showPassword = !showPassword}
                             class="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-brandBlue focus:outline-none p-1 transition-colors"
-                            aria-label={showPassword ? "Sakrij lozinku" : "Prikaži lozinku"}
+                            aria-label={showPassword ? $t('login.btn_hide_pass') : $t('login.btn_show_pass')}
                         >
                             {#if showPassword}
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
@@ -140,9 +147,9 @@
                         <span class="relative z-10 flex items-center justify-center uppercase tracking-[0.4em] text-[10px]">
                             {#if loading}
                                 <svg class="animate-spin h-4 w-4 mr-3" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Autorizacija...
+                                {$t('login.btn_loading')}
                             {:else}
-                                Pristupi panelu
+                                {$t('login.btn_submit')}
                             {/if}
                         </span>
                     </button>
@@ -151,7 +158,7 @@
 
             <div class="mt-12 text-center">
                 <a href="/" class="text-[9px] font-black text-white/20 hover:text-brandBlue transition-all uppercase tracking-[0.3em] flex items-center justify-center gap-2 group">
-                    <span class="group-hover:-translate-x-1 transition-transform">←</span> Početna
+                    <span class="group-hover:-translate-x-1 transition-transform">←</span> {$t('login.btn_home')}
                 </a>
             </div>
         </div>

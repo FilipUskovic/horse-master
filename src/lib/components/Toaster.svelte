@@ -3,6 +3,7 @@
     import { fly, fade } from 'svelte/transition';
     import { flip } from 'svelte/animate';
     import { quintOut } from 'svelte/easing';
+    import { t } from 'svelte-i18n';
 </script>
 
 <div class="fixed top-8 right-8 z-[1000] flex flex-col gap-4 w-full max-w-[320px] pointer-events-none">
@@ -28,13 +29,13 @@
             </div>
 
             <div class="flex-grow font-black uppercase text-[10px] tracking-[0.2em] leading-tight text-brandLight/90">
-                {item.message}
+                {$t(item.message)}
             </div>
 
             <button 
                 onclick={() => toast.remove(item.id)} 
                 class="p-2 -mr-2 text-white/20 hover:text-white transition-colors"
-                aria-label="Zatvori obavijest"
+                aria-label={$t('toast.close')}
             >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>

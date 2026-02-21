@@ -1,0 +1,220 @@
+{
+  "hero": {
+    "subtitle": "Est. 2014 — Prestige",
+    "btn_collab": "Let's work together",
+    "btn_gallery": "Gallery"
+  },
+  "nav": {
+    "start": "Home",
+    "about": "About Us",
+    "portfolio": "Portfolio",
+    "gallery": "Gallery",
+    "contact": "Contact"
+  },
+  "modal": {
+    "title": "Are you sure?",
+    "message": "This action cannot be undone.",
+    "close": "Close modal",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "cookies": {
+    "title": "Privacy and Experience",
+    "message": "We use essential cookies to ensure peak functionality and a premium experience on our platform.",
+    "aria_accept": "Accept cookies",
+    "btn_accept": "Accept"
+  },
+  "footer": {
+    "description": "Professional horse care and transport. Over a decade of tradition in film production, events, and secure transport.",
+    "nav_title": "Navigation",
+    "contact_title": "Contact",
+    "location": "Samobor, Croatia",
+    "rights": "All Rights Reserved.",
+    "admin": "Admin Access",
+    "scroll_top": "Back to top"
+  },
+  "editor": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "strike": "Strike",
+    "h2": "Heading 2",
+    "h3": "Heading 3",
+    "list": "List",
+    "ordered_list": "Numbered List",
+    "placeholder": "Write something..."
+  },
+  "seo": {
+    "default_title": "Premium Riding School and Horse Care",
+    "default_description": "Horse Master offers premium horse riding lessons, professional care, and secure horse transport with a decade of tradition.",
+    "keywords": "horses, horse riding, riding school, equestrian club, horse transport, horse stable, Croatia"
+  },
+  "toast": {
+    "close": "Close notification",
+    "saved": "Changes saved successfully!",
+    "error": "An error occurred. Please try again.",
+    "uploading": "Uploading file...",
+    "gallery_saved": "Photo successfully added to the gallery!",
+    "gallery_deleted": "Photo permanently removed from the gallery.",
+    "news_saved": "New post has been successfully published!",
+    "news_updated": "Changes to the post have been saved!",
+    "news_deleted": "Post has been successfully deleted from the archive.",
+    "required": "Please fill in all required fields!",
+    "error_baza": "An error occurred while communicating with the database."
+    
+  },
+  "errors": {
+    "compression_failed": "Image compression failed.",
+    "file_read_error": "Error reading file."
+  },
+  "about": {
+    "seo_title": "About Us",
+    "seo_desc": "Defining excellence in equestrian services.",
+    "est": "Est. 2014 — Zagreb",
+    "hero_1": "Horse",
+    "hero_2": "Master",
+    "intro_main": "HorseMaster has been dedicated to equine activities for over a decade.",
+    "intro_highlight": "These noble animals are our passion and our calling.",
+    "intro_sub": "We are here to adapt to all your needs and ideas. A large number of successfully realized projects and the trust of satisfied clients.",
+    "prod_tag": "For Screens",
+    "prod_title": "Production\n& Film",
+    "prod_desc": "If you need horses for commercials, music videos, or movies — we are here for you. Our horses are trained for the set.",
+    "event_tag": "Special Occasions",
+    "event_title": "Events & \nMemories",
+    "wedding_title": "Weddings",
+    "wedding_desc": "Want indelible memories and a wedding photosession with horses? Unmatched elegance.",
+    "photo_title": "Photosession",
+    "photo_desc": "Whether it's private sessions or fashion editorials, we are here for you.",
+    "event_footer": "We adapt to your specific needs.",
+    "cta_tag": "Be part of our story",
+    "cta_title": "Get back in the \nSaddle.",
+    "cta_btn": "Let's Collaborate"
+  },
+  "admin": {
+    "nav_site": "Site",
+    "nav_logout": "Logout",
+    "gallery_new": "New Photo",
+    "gallery_active": "Active Gallery",
+    "news_new": "New Post",
+    "news_edit": "Edit Post",
+    "news_archive": "Archive",
+    "label_title_hr": "Title (HR)",
+    "label_title_en": "Title (EN)",
+    "label_desc_hr": "Description (HR)",
+    "label_desc_en": "Description (EN)",
+    "label_content_hr": "Content (HR)",
+    "label_content_en": "Content (EN)",
+    "btn_publish": "Publish",
+    "btn_save": "Save Changes",
+    "confirm_delete": "Delete?",
+    "label_photo_req": "Photo (Required)",
+    "label_photo_opt": "Photo (Optional)",
+    "btn_edit": "Edit",
+    "btn_delete": "Delete"
+  },
+  "contact": {
+    "page_title": "Contact",
+    "header_tag": "Inquiry",
+    "header_title": "Get back in the",
+    "header_highlight": "Saddle.",
+    "label_name": "Full Name",
+    "label_email": "Email Address",
+    "label_message": "Inquiry Details",
+    "btn_send": "Send Inquiry",
+    "btn_sending": "Sending...",
+    "success_title": "Sent!",
+    "success_msg": "Thank you, {name}. <br> We will get back to you shortly.",
+    "btn_back": "Back to Home",
+    "btn_new": "Send a new inquiry instead",
+    "aria_close": "Cancel and return to home"
+  },
+  "errors_form": {
+    "name_short": "Name must be at least 2 characters.",
+    "email_invalid": "Enter a valid email address.",
+    "msg_short": "Message is too short.",
+    "form_invalid": "Please correct the highlighted fields.",
+    "network_error": "Network error. Please check your connection."
+  },
+  "gallery_page": {
+    "title_1": "Photo",
+    "title_2": "Reportage",
+    "subtitle": "Archive of works and moments",
+    "quote": "\"We capture strength, elegance, and indelible memories through the lens of our collaborators.\"",
+    "empty": "The archive is currently empty"
+  },
+"login": {
+    "page_title": "Login | Admin",
+    "role": "Admin",
+    "label_email": "Identity",
+    "placeholder_email": "your@email.com",
+    "label_pass": "Password",
+    "placeholder_pass": "••••••••",
+    "btn_hide_pass": "Hide password",
+    "btn_show_pass": "Show password",
+    "btn_submit": "Access panel",
+    "btn_loading": "Authorizing...",
+    "btn_home": "Home",
+    "err_invalid": "Invalid email or password.",
+    "err_limit": "Too many requests. Please wait.",
+    "err_default": "An error occurred. Please try again.",
+    "err_system": "Unexpected system error."
+  },
+  "news_page": {
+    "tag": "Archive",
+    "title_1": "All",
+    "title_2": "News",
+    "read_more": "Read full story",
+    "empty": "The archive is currently empty",
+    "modal_tag": "News"
+  },
+  "portfolio": {
+    "seo_title": "Portfolio",
+    "seo_desc": "References and projects of the Horse Master Prestige team.",
+    "tag": "Selected Works",
+    "title_main": "Port",
+    "title_highlight": "folio",
+    "cursor_view": "View",
+    "cta_title": "Become part of the",
+    "cta_highlight": "Prestige.",
+    "cta_btn": "Request Collaboration"
+  },
+  "services_page": {
+    "seo_title": "Our Services",
+    "seo_desc": "Detailed overview of our horse services. Horses for film, music videos, weddings, and transport.",
+    "expertise_tag": "Expertise",
+    "btn_request": "Request this service",
+    "cta_title": "Ready to",
+    "cta_highlight": "Collaborate?",
+    "cta_btn": "Contact Us",
+    "aria_back": "Back to Home"
+  },
+  "error_page": {
+    "seo_title": "404 | Page Not Found",
+    "tag": "Error Code",
+    "title_1": "Lost in the",
+    "title_2": "gallop?",
+    "desc": "Unfortunately, the page you are looking for does not exist or has been moved.",
+    "btn_home": "Back to Home"
+  },
+  "home": {
+    "seo_title": "Home | Horse Master - Horse Transport",
+    "seo_desc": "The safest and most reliable horse transport in the region. The comfort and safety of your champions come first.",
+    "hero_btn_collab": "Let's work together",
+    "hero_btn_gallery": "Gallery",
+    "hero_est": "Est. 2014 — Prestige",
+    "stats_years": "Years",
+    "stats_partner": "Partner",
+    "stats_security": "Security",
+    "stats_reference": "Reference",
+    "services_tag": "Expertise",
+    "services_title_1": "Our",
+    "services_title_2": "Services",
+    "services_more": "Read more",
+    "news_tag": "Latest",
+    "news_archive": "Archive",
+    "news_title_empty_1": "News from",
+    "news_title_empty_2": "Prestige",
+    "news_empty_desc": "We are currently preparing new content",
+    "news_more": "Read more",
+    "news_modal_tag": "News"
+  }
+}

@@ -27,6 +27,8 @@
 		"@supabase/supabase-js": "^2.95.3",
 		"@tiptap/core": "^3.19.0",
 		"@tiptap/extension-link": "^3.19.0",
-		"@tiptap/starter-kit": "^3.19.0"
+		"@tiptap/starter-kit": "^3.19.0",
+		"svelte-dnd-action": "^0.9.69",
+		"svelte-i18n": "^4.0.1"
 	}
 }
