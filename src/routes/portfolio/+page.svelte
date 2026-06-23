@@ -51,39 +51,6 @@
             type_en: "Opera / Theatre",
             icon: `<path d="M11 5L1 12l10 7V5zM23 5l-10 7 10 7V5z" />`
         },
-        {
-            year: "2026",
-            title: "Dioklecijan",
-            title_en: "Diocletian",
-            client: "HRT Povijesni spektakl",
-            client_en: "HRT Historical Spectacle",
-            link: "https://magazin.hrt.hr/kultura/hrt-ov-povijesni-spektakl-o-dioklecijanu-vjerojatno-najvaznija-osoba-s-nasih-prostora--12460626",
-            type: "TV Produkcija",
-            type_en: "TV Production",
-            icon: `<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />`
-        },
-        {
-            year: "2013—",
-            title: "Kravat pukovnija",
-            title_en: "Cravat Regiment",
-            client: "Počasna satnija",
-            client_en: "Honorary Company",
-            link: "https://www.kravatpukovnija.com/",
-            type: "Povijesna postrojba",
-            type_en: "Historical Unit",
-            icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />`
-        },
-        {
-            year: "Ref.",
-            title: "Grad Novska",
-            title_en: "City of Novska",
-            client: "Gradska suradnja",
-            client_en: "Municipal Cooperation",
-            link: "#",
-            type: "Institucija",
-            type_en: "Institution",
-            icon: `<path d="M3 21h18M3 10h18M5 10V21M19 10V21M9 21V10M15 21V10M12 3L2 10h20L12 3z" />`
-        }
     ];
 
     function getField(p: Project, field: 'title' | 'client' | 'type') {
